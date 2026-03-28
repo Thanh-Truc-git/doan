@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+
+    <title>Choose Seat</title>
+
+    <style>
+
+        body{
+        font-family:Arial;
+        text-align:center;
+        }
+
+        .row{
+        display:flex;
+        justify-content:center;
+        margin:5px;
+        }
+
+        .seat{
+
+        width:40px;
+        height:40px;
+
+        margin:4px;
+
+        display:flex;
+        align-items:center;
+        justify-content:center;
+
+        border-radius:6px;
+
+        background:#ccc;
+        cursor:pointer;
+        }
+
+        .selected{
+        background:#4CAF50;
+        color:white;
+        }
+
+        .booked{
+        background:#ff4d4d;
+        color:white;
+        cursor:not-allowed;
+        }
+
+        .screen{
+        margin:20px auto;
+        width:400px;
+        height:20px;
+        background:#444;
+        color:white;
+        line-height:20px;
+        }
+
+    </style>
+
+</head>
+
+<body>
+
+<h2>Choose Seats</h2>
+
+<div class="screen">SCREEN</div>
+
+<div id="seat-map"></div>
+
+<h3>Total: <span id="total">0</span> VND</h3>
+
+<input type="hidden" id="showtimeId" th:value="${showtime.id}">
+
+<button onclick="bookSeats()">
+    Thanh toán
+</button>
+
+<script th:inline="javascript">
+
+    let price = [[${showtime.price}]];
+
+    let bookedSeats = [[${bookedSeats}]];
+
+</script>
+
+<script src="/js/seatmap.js"></script>
+
+<script>
+
+    createSeats()
+    setBookedSeats(bookedSeats)
+
+</script>
+
+</body>
+</html>
