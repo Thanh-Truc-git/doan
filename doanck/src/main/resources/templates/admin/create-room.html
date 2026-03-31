@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <title>Create Room</title>
+
+  <style>
+    body {
+        background: #121212;
+        color: white;
+        font-family: sans-serif;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+    }
+
+    .card {
+        background: #1a1a1a;
+        padding: 30px;
+        border-radius: 10px;
+        width: 400px;
+    }
+
+    h2 {
+        color: #ffc107;
+    }
+
+    input {
+        width: 100%;
+        padding: 10px;
+        margin-top: 5px;
+        margin-bottom: 15px;
+        background: #222;
+        border: 1px solid #444;
+        color: white;
+        border-radius: 6px;
+    }
+
+    button {
+        width: 100%;
+        padding: 12px;
+        background: #28a745;
+        border: none;
+        color: white;
+        font-weight: bold;
+        border-radius: 6px;
+    }
+
+    a {
+        display: block;
+        text-align: center;
+        margin-top: 10px;
+        color: #aaa;
+    }
+  </style>
+    <link rel="stylesheet" href="/css/app-theme.css">
+</head>
+
+<body>
+<a href="/admin/dashboard" style="position:fixed;top:20px;right:20px;padding:10px 14px;background:#374151;color:#fff;text-decoration:none;border-radius:10px;z-index:9999;">Dashboard</a>
+
+<div class="card">
+  <h2>Create Room</h2>
+
+  <form th:action="@{/admin/rooms/save}" th:object="${room}" method="post">
+
+    <label>Room Name</label>
+    <input type="text" th:field="*{name}" required>
+
+    <label>Total Seats</label>
+    <input type="number" th:field="*{totalSeats}" required>
+
+    <button type="submit">Save Room</button>
+
+    <a th:href="@{/admin/rooms}">← Back</a>
+
+  </form>
+</div>
+
+</body>
+</html>

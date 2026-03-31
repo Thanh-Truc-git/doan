@@ -1,0 +1,66 @@
+﻿<!doctype html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <script>
+        (function () {
+            const theme = localStorage.getItem('bhtnex_theme') === 'light' ? 'light' : 'dark';
+            document.documentElement.setAttribute('data-theme', theme);
+        })();
+    </script>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>Settings</title>
+    <link rel="stylesheet" href="/css/app-theme.css">
+</head>
+<body>
+<div class="account-shell section-stack">
+    <section class="surface-panel" data-reveal style="padding:28px;">
+        <div class="page-header">
+            <div>
+                <span class="eyebrow">Control room</span>
+                <h1 class="section-title">Cai dat tai khoan</h1>
+            </div>
+            <div class="inline-actions">
+                <a class="btn"
+                   th:if="${isAdmin}"
+                   th:href="@{/admin/dashboard}">Dashboard admin</a>
+                <a class="btn ghost" th:href="@{/movies}">Trang phim</a>
+            </div>
+        </div>
+        <p class="section-text">Tat ca thao tac tai khoan da duoc gom lai thanh mot workspace ro rang, dung tinh than UI/UX cua mot web cinema chuyen nghiep.</p>
+        <div class="admin-grid" style="margin-top:20px;">
+            <article class="admin-panel" style="padding:20px;">
+                <h3>Thong tin ca nhan</h3>
+                <p class="panel-note">Xem profile hien tai cua ban.</p>
+                <div class="inline-actions" style="margin-top:12px;"><a class="btn" th:href="@{/profile}">Xem profile</a></div>
+            </article>
+            <article class="admin-panel" style="padding:20px;">
+                <h3>Doi mat khau</h3>
+                <p class="panel-note">Tang bao mat cho tai khoan cinema.</p>
+                <div class="inline-actions" style="margin-top:12px;"><a class="btn" th:href="@{/change-password}">Cap nhat</a></div>
+            </article>
+            <article class="admin-panel" style="padding:20px;">
+                <h3>Ve cua toi</h3>
+                <p class="panel-note">Xem tat ca ticket da mua va ma QR.</p>
+                <div class="inline-actions" style="margin-top:12px;"><a class="btn" th:href="@{/tickets}">Mo tickets</a></div>
+            </article>
+            <article class="admin-panel" style="padding:20px;">
+                <h3>Lich su dat ve</h3>
+                <p class="panel-note">Theo doi lich su booking mot cach co he thong.</p>
+                <div class="inline-actions" style="margin-top:12px;"><a class="btn" th:href="@{/booking-history}">Xem lich su</a></div>
+            </article>
+            <article class="admin-panel" style="padding:20px;">
+                <h3>Phim yeu thich</h3>
+                <p class="panel-note">Danh sach phim ban da luu o homepage.</p>
+                <div class="inline-actions" style="margin-top:12px;"><a class="btn" th:href="@{/favourites}">Mo danh sach</a></div>
+            </article>
+            <article class="admin-panel" style="padding:20px;">
+                <h3>Thong bao</h3>
+                <p class="panel-note">Cap nhat uu dai va tin moi trong tai khoan.</p>
+                <div class="inline-actions" style="margin-top:12px;"><a class="btn" th:href="@{/notifications}">Xem thong bao</a></div>
+            </article>
+        </div>
+    </section>
+</div>
+</body>
+</html>

@@ -1,15 +1,17 @@
 package com.example.doanck.service;
 
-import jakarta.transaction.Transactional;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
+import com.example.doanck.model.Booking;
+import com.example.doanck.model.Showtime;
 import com.example.doanck.model.Ticket;
+import com.example.doanck.model.User;
+import com.example.doanck.repository.BookingRepository;
 import com.example.doanck.repository.TicketRepository;
 import com.example.doanck.util.QRCodeService;
-
+import jakarta.transaction.Transactional;
+import java.time.LocalDateTime;
 import java.util.List;
-import java.util.UUID;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 @Service
 public class BookingService {
@@ -18,88 +20,80 @@ public class BookingService {
     private TicketRepository ticketRepository;
 
     @Autowired
+    private BookingRepository bookingRepository;
+
+    @Autowired
     private QRCodeService qrCodeService;
 
-    @Transactional
-    public void bookSeat(List<String> seats, Ticket baseTicket, String role) {
+    public List<Booking> getAllBookings() {
+        return bookingRepository.findAllByOrderByBookingTimeDesc();
+    }
 
-        boolean isAdmin =
-                role.equalsIgnoreCase("ADMIN") ||
-                        role.equalsIgnoreCase("STAFF") ||
-                        role.equalsIgnoreCase("ROLE_ADMIN") ||
-                        role.equalsIgnoreCase("ROLE_STAFF");
+    public Booking createBooking(User user, Showtime showtime) {
+        Booking booking = new Booking();
+        booking.setUser(user);
+        booking.setShowtime(showtime);
+        booking.setBookingTime(LocalDateTime.now());
+        return bookingRepository.save(booking);
+    }
 
-        // =========================
-        // USER → 1 BOOKING
-        // =========================
-        if (!isAdmin) {
-
-            String bookingCode = baseTicket.getBookingCode();
-
-            String qrText = "BOOKING:" + bookingCode;
-            String qrCode = qrCodeService.generateQRCode(qrText);
-
-            for (String seat : seats) {
-
-                if (seat == null || seat.trim().isEmpty()) continue;
-
-                boolean exists = ticketRepository
-                        .existsBySeatNumberAndShowtime(
-                                seat,
-                                baseTicket.getShowtime());
-
-                if (exists) {
-                    throw new RuntimeException("Seat " + seat + " already booked");
-                }
-
-                Ticket ticket = new Ticket();
-
-                ticket.setSeatNumber(seat);
-                ticket.setShowtime(baseTicket.getShowtime());
-                ticket.setUser(baseTicket.getUser());
-
-                ticket.setBookingCode(bookingCode);
-                ticket.setQrCode(qrCode);
-
-                ticketRepository.save(ticket);
-            }
-
+    public boolean isSeatBooked(String seatNumber, Showtime showtime) {
+        if (seatNumber == null || seatNumber.isBlank()) {
+            return true;
         }
-        // =========================
-        // ADMIN → mỗi ghế 1 BOOKING
-        // =========================
-        else {
 
-            for (String seat : seats) {
+        String normalizedSeat = seatNumber.trim();
+        return showtime != null
+                ? ticketRepository.existsBySeatNumberAndShowtimeAndStatusNot(normalizedSeat, showtime, "CANCELLED")
+                : ticketRepository.existsBySeatNumberAndShowtimeIsNullAndStatusNot(normalizedSeat, "CANCELLED");
+    }
 
-                if (seat == null || seat.trim().isEmpty()) continue;
+    @Transactional
+    public Ticket bookSeat(Ticket ticket) {
 
+        try {
+            if (ticket.getShowtime() != null) {
                 boolean exists = ticketRepository
-                        .existsBySeatNumberAndShowtime(
-                                seat,
-                                baseTicket.getShowtime());
+                        .existsBySeatNumberAndShowtimeAndStatusNot(
+                                ticket.getSeatNumber(),
+                                ticket.getShowtime(),
+                                "CANCELLED");
 
                 if (exists) {
-                    throw new RuntimeException("Seat " + seat + " already booked");
+                    return null;
                 }
-
-
-                String bookingCode = UUID.randomUUID().toString();
-
-                String qrText = "TICKET:" + bookingCode;
-                String qrCode = qrCodeService.generateQRCode(qrText);
-
-                Ticket ticket = new Ticket();
-
-                ticket.setSeatNumber(seat);
-                ticket.setShowtime(baseTicket.getShowtime());
-                ticket.setUser(baseTicket.getUser());
-
-                ticket.setBookingCode(bookingCode);
-                ticket.setQrCode(qrCode);
-
-                ticketRepository.save(ticket);
             }
+
+            String qrText =
+                    "Movie Ticket | Code:"
+                            + (ticket.getTicketCode() != null ? ticket.getTicketCode() : "N/A")
+                            + " | Seat:"
+                            + ticket.getSeatNumber()
+                            + " | Showtime:"
+                            + (ticket.getShowtime() != null
+                            ? ticket.getShowtime().getId()
+                            : "N/A");
+
+            try {
+                String qrCode = qrCodeService.generateQRCode(qrText);
+                ticket.setQrCode(qrCode);
+            } catch (Exception e) {
+                ticket.setQrCode(null);
+            }
+
+            try {
+                return ticketRepository.save(ticket);
+            } catch (Exception saveException) {
+                if (ticket.getQrCode() != null) {
+                    ticket.setQrCode(null);
+                    return ticketRepository.save(ticket);
+                }
+                throw saveException;
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
         }
     }
 }

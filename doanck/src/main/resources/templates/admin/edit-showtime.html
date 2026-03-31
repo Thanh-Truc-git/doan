@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sửa Suất Chiếu</title>
+    <style>
+        body{font-family:Arial,sans-serif;background:#121212;color:#fff;margin:0;padding:20px}
+        form{max-width:720px;margin:auto;background:#1f1f1f;padding:20px;border-radius:14px}
+        input,select{width:100%;padding:10px;margin-top:6px;margin-bottom:14px;border-radius:8px;border:1px solid #333;background:#111;color:#fff}
+        button,a{padding:10px 14px;border:none;border-radius:8px;text-decoration:none;display:inline-block}
+        button{background:#2563eb;color:#fff}.back{background:#374151;color:#fff}
+    </style>
+    <link rel="stylesheet" href="/css/app-theme.css">
+</head>
+<body>
+<a href="/admin/dashboard" style="position:fixed;top:20px;right:20px;padding:10px 14px;background:#374151;color:#fff;text-decoration:none;border-radius:10px;z-index:9999;">Dashboard</a>
+<form th:action="@{/admin/showtimes/save}" method="post">
+    <h2>Sửa suất chiếu</h2>
+    <input type="hidden" name="id" th:value="${showtime.id}">
+
+    <label>Phim</label>
+    <select name="movieId" required>
+        <option value="">Chọn phim</option>
+        <option th:each="movie : ${movies}"
+                th:value="${movie.id}"
+                th:text="${movie.title}"
+                th:selected="${showtime.movie != null && showtime.movie.id == movie.id}"></option>
+    </select>
+
+    <label>Phòng</label>
+    <select name="roomId" required>
+        <option value="">Chọn phòng</option>
+        <option th:each="room : ${rooms}"
+                th:value="${room.id}"
+                th:text="${room.name}"
+                th:selected="${showtime.room != null && showtime.room.id == room.id}"></option>
+    </select>
+
+    <label>Thời gian chiếu</label>
+    <input type="datetime-local"
+           name="startTime"
+           th:value="${showtime.startTime != null ? #temporals.format(showtime.startTime, 'yyyy-MM-dd''T''HH:mm') : ''}"
+           required>
+
+    <div style="margin-top:16px">
+        <button type="submit">Cập nhật suất chiếu</button>
+        <a class="back" href="/admin/showtimes">Quay lại</a>
+    </div>
+</form>
+</body>
+</html>

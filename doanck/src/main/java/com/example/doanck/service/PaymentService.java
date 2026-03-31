@@ -6,6 +6,8 @@ import org.springframework.stereotype.Service;
 import com.example.doanck.model.Payment;
 import com.example.doanck.repository.PaymentRepository;
 
+import java.util.List;
+
 @Service
 public class PaymentService {
 
@@ -14,6 +16,10 @@ public class PaymentService {
 
     public Payment savePayment(Payment payment) {
         return paymentRepository.save(payment);
+    }
+
+    public List<Payment> getAllPayments() {
+        return paymentRepository.findAll();
     }
 
 }

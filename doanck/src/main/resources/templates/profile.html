@@ -1,0 +1,40 @@
+﻿<!doctype html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <script>
+        (function () {
+            const theme = localStorage.getItem('bhtnex_theme') === 'light' ? 'light' : 'dark';
+            document.documentElement.setAttribute('data-theme', theme);
+        })();
+    </script>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>Profile</title>
+    <link rel="stylesheet" href="/css/app-theme.css">
+</head>
+<body>
+<div class="account-shell section-stack">
+    <section class="hero-stage" data-reveal>
+        <div class="hero-copy">
+            <span class="eyebrow">Account profile</span>
+            <h1 class="section-title">Thong tin tai khoan</h1>
+            <p class="section-text">Mot view profile sach se, de doc, giu dung tinh than cua mot web cinema hien dai thay vi chi la mot trang thong tin tho.</p>
+        </div>
+        <div class="surface-panel" style="padding:24px;">
+            <div class="kv-row">
+                <div class="kv-item"><strong>Username</strong><span th:text="${username}">User</span></div>
+                <div class="kv-item"><strong>Email</strong><span th:text="${email}">N/A</span></div>
+                <div class="kv-item"><strong>Role</strong><span th:text="${role}">USER</span></div>
+            </div>
+        </div>
+    </section>
+    <div class="inline-actions">
+        <a class="btn"
+           th:if="${isAdmin}"
+           th:href="@{/admin/dashboard}">Dashboard admin</a>
+        <a class="btn" th:href="@{/settings}">Mo cai dat</a>
+        <a class="btn ghost" th:href="@{/movies}">Quay lai movies</a>
+    </div>
+</div>
+</body>
+</html>

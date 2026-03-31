@@ -1,0 +1,74 @@
+﻿<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Foods</title>
+    <link rel="stylesheet" href="/css/app-theme.css">
+</head>
+<body class="admin-page">
+<div class="admin-shell section-stack">
+    <section class="surface-panel" data-reveal style="padding:28px;">
+        <div class="page-header">
+            <div>
+                <span class="eyebrow">Concession admin</span>
+                <h1 class="section-title">Quan ly do an va thuc uong</h1>
+                <p class="section-text">Trang food da duoc dua ve dung vai tro: mot control room cho menu snack, category va thao tac quan tri nhanh.</p>
+            </div>
+            <div class="toolbar-actions">
+                <a class="btn" href="/admin/foods/create">Them food</a>
+                <a class="btn ghost" href="/admin/foods/categories/create">Them category</a>
+                <a class="btn ghost" href="/admin/dashboard">Dashboard</a>
+            </div>
+        </div>
+
+        <div class="split-layout">
+            <section class="admin-panel" style="padding:22px;">
+                <div class="page-header">
+                    <div>
+                        <h3>Danh sach food</h3>
+                        <p class="panel-note" th:text="${foods != null ? foods.size() + ' mon hien co' : '0 mon hien co'}">0 mon</p>
+                    </div>
+                </div>
+                <div th:if="${foods == null || #lists.isEmpty(foods)}" class="empty-state">Chua co mon an nao.</div>
+                <div class="catalog-grid" th:if="${foods != null && !#lists.isEmpty(foods)}">
+                    <article class="movie-card-lite" th:each="food : ${foods}">
+                        <div class="food-thumb" style="height:180px; margin-bottom:14px;">
+                            <img th:src="${food.image != null && !#strings.isEmpty(food.image) ? '/uploads/' + food.image : '/assets/img/hero.jpg'}" th:alt="${food.name}">
+                        </div>
+                        <h3 th:text="${food.name}">Food</h3>
+                        <p class="muted" style="margin:8px 0 12px;" th:text="${food.category != null ? food.category.name : 'Chua phan loai'}">Category</p>
+                        <p class="muted" style="margin-bottom:12px;" th:text="${#numbers.formatDecimal(food.price, 1, 0) + ' VND'}">0 VND</p>
+                        <div class="inline-actions">
+                            <a class="btn" th:href="@{/admin/foods/edit/{id}(id=${food.id})}">Sua</a>
+                            <a class="btn danger" th:href="@{/admin/foods/delete/{id}(id=${food.id})}" onclick="return confirm('Xoa mon nay?')">Xoa</a>
+                        </div>
+                    </article>
+                </div>
+            </section>
+
+            <aside class="admin-panel" id="categories-panel" style="padding:22px;">
+                <div class="page-header">
+                    <div>
+                        <h3>Danh muc food</h3>
+                        <p class="panel-note" th:text="${categories != null ? categories.size() + ' danh muc' : '0 danh muc'}">0</p>
+                    </div>
+                </div>
+                <div th:if="${categories == null || #lists.isEmpty(categories)}" class="empty-state">Chua co danh muc nao.</div>
+                <div class="section-stack" th:if="${categories != null && !#lists.isEmpty(categories)}">
+                    <article class="admin-panel" style="padding:16px;" th:each="category : ${categories}">
+                        <div class="page-header" style="margin-bottom:0; align-items:center;">
+                            <strong th:text="${category.name}">Category</strong>
+                            <div class="inline-actions">
+                                <a class="btn ghost" th:href="@{/admin/foods/categories/edit/{id}(id=${category.id})}">Sua</a>
+                                <a class="btn danger" th:href="@{/admin/foods/categories/delete/{id}(id=${category.id})}" onclick="return confirm('Xoa danh muc nay?')">Xoa</a>
+                            </div>
+                        </div>
+                    </article>
+                </div>
+            </aside>
+        </div>
+    </section>
+</div>
+</body>
+</html>

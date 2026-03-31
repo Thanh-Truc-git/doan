@@ -1,0 +1,25 @@
+﻿<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Edit Category</title>
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="/css/app-theme.css">
+</head>
+<body>
+<a href="/admin/dashboard" style="position:fixed;top:20px;right:20px;padding:10px 14px;background:#374151;color:#fff;text-decoration:none;border-radius:10px;z-index:9999;">Dashboard</a>
+<div class="container" style="max-width: 600px; margin: 50px auto;">
+    <h2>Edit Category</h2>
+    <form th:action="@{/admin/foods/categories/save}" th:object="${category}" method="post">
+        <input type="hidden" th:field="*{id}">
+        <div style="margin-bottom: 16px;">
+            <label>TĂªn danh má»¥c</label>
+            <input type="text" th:field="*{name}" required style="width: 100%; padding: 10px;">
+        </div>
+        <button type="submit">LÆ°u</button>
+        <a href="/admin/foods" style="margin-left: 10px;">Há»§y</a>
+    </form>
+</div>
+</body>
+</html>
+
