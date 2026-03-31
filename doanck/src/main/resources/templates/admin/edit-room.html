@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Cập nhật phòng</title>
+
+    <style>
+        body {
+            font-family: Arial;
+            background: #0f172a;
+            color: white;
+            margin: 0;
+        }
+
+        .container {
+            max-width: 600px;
+            margin: 60px auto;
+            background: #1e293b;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 0 20px rgba(0,0,0,0.4);
+        }
+
+        h2 {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-top: 15px;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+
+        input {
+            width: 100%;
+            padding: 10px;
+            border-radius: 8px;
+            border: none;
+            outline: none;
+            background: #0f172a;
+            color: white;
+        }
+
+        input:focus {
+            border: 1px solid #38bdf8;
+        }
+
+        .preview {
+            margin-top: 20px;
+            padding: 15px;
+            background: #020617;
+            border-radius: 10px;
+        }
+
+        .seat {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            background: #38bdf8;
+            margin: 3px;
+            border-radius: 4px;
+        }
+
+        button {
+            margin-top: 20px;
+            width: 100%;
+            padding: 12px;
+            background: #22c55e;
+            border: none;
+            border-radius: 10px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background: #16a34a;
+        }
+
+        .back {
+            margin-top: 10px;
+            display: inline-block;
+            color: #94a3b8;
+            text-decoration: none;
+        }
+    </style>
+    <link rel="stylesheet" href="/css/app-theme.css">
+</head>
+
+<body>
+<a href="/admin/dashboard" style="position:fixed;top:20px;right:20px;padding:10px 14px;background:#374151;color:#fff;text-decoration:none;border-radius:10px;z-index:9999;">Dashboard</a>
+
+<div class="container">
+
+    <h2>🎬 Cập nhật phòng chiếu</h2>
+
+    <form th:action="@{/admin/rooms/save}" method="post" th:object="${room}">
+
+        <!-- ID -->
+        <input type="hidden" th:field="*{id}" />
+
+        <label>Tên phòng</label>
+        <input type="text" th:field="*{name}" placeholder="Ví dụ: Phòng VIP 1" required/>
+
+        <label>Số ghế</label>
+        <input type="number" th:field="*{seatCount}" id="seatCount" min="1" required/>
+
+        <!-- PREVIEW GHẾ -->
+        <div class="preview">
+            <strong>Preview ghế:</strong>
+            <div id="seatPreview"></div>
+        </div>
+
+        <button type="submit">💾 Cập nhật phòng</button>
+
+    </form>
+
+    <a href="/admin/rooms" class="back">← Quay lại</a>
+
+</div>
+
+<script>
+    const seatInput = document.getElementById("seatCount");
+    const preview = document.getElementById("seatPreview");
+
+    function renderSeats() {
+        preview.innerHTML = "";
+        let count = seatInput.value || 0;
+
+        for (let i = 0; i < count; i++) {
+            let seat = document.createElement("div");
+            seat.classList.add("seat");
+            preview.appendChild(seat);
+        }
+    }
+
+    seatInput.addEventListener("input", renderSeats);
+
+    // load ban đầu
+    renderSeats();
+</script>
+
+</body>
+</html>

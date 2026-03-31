@@ -1,10 +1,31 @@
-<!DOCTYPE html>
-<html lang="en">
+﻿<!DOCTYPE html>
+<html lang="vi">
 <head>
+    <script>
+        (function () {
+            const theme = localStorage.getItem('bhtnex_theme') === 'light' ? 'light' : 'dark';
+            document.documentElement.setAttribute('data-theme', theme);
+        })();
+    </script>
     <meta charset="UTF-8">
-    <title>Title</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Thanh toan that bai</title>
+    <link rel="stylesheet" href="/css/app-theme.css">
 </head>
-<body>
-
+<body class="auth-page">
+<div class="auth-shell">
+    <div class="auth-card" data-reveal>
+        <div class="auth-brand">
+            <span class="eyebrow">Payment interrupted</span>
+            <h1 class="auth-title">Thanh toan chua thanh cong</h1>
+            <p class="auth-subtitle">Phien thanh toan nay da dung lai. Ban co the quay ve seat map hoac trang phim de thu lai voi mot buoc flow gon va ro hon.</p>
+        </div>
+        <div class="alert error">Khong the hoan tat giao dich. Vui long thu lai trong it phut nua.</div>
+        <div class="stack-actions">
+            <a class="btn" href="/movies">Quay lai trang phim</a>
+            <a class="btn ghost" href="/orders/snacks">Mo snack lounge</a>
+        </div>
+    </div>
+</div>
 </body>
 </html>

@@ -1,0 +1,56 @@
+﻿<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="vi">
+<head>
+    <script>
+        (function () {
+            const theme = localStorage.getItem('bhtnex_theme') === 'light' ? 'light' : 'dark';
+            document.documentElement.setAttribute('data-theme', theme);
+        })();
+    </script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Snack lounge</title>
+    <link rel="stylesheet" href="/css/app-theme.css">
+</head>
+<body>
+<div class="cinema-shell section-stack">
+    <section class="hero-stage" data-reveal>
+        <div class="hero-copy">
+            <span class="eyebrow">Snack lounge</span>
+            <h1 class="section-title">Chon bap nuoc va mon an di cung phim</h1>
+            <p class="section-text">Menu snack duoc lam lai theo giao dien clean, de doc gia va tang so luong ma khong lam roi flow dat ve.</p>
+        </div>
+        <div class="surface-panel" style="padding:24px;">
+            <div class="kv-row">
+                <div class="kv-item"><strong>Movie ID</strong><span th:text="${selectedMovieId}">0</span></div>
+                <div class="kv-item"><strong>Ghe da chon</strong><span th:text="${session.seats != null ? session.seats : 'Chua co'}">N/A</span></div>
+            </div>
+        </div>
+    </section>
+
+    <section class="surface-panel" data-reveal style="padding:28px;">
+        <form th:action="@{/orders/confirm}" method="post" class="section-stack">
+            <input type="hidden" name="movieId" th:value="${selectedMovieId}">
+            <input type="hidden" name="selectedSeats" th:value="${session.seats}">
+
+            <div class="catalog-grid">
+                <article th:each="food : ${foods}" class="movie-card-lite">
+                    <div class="food-thumb" style="height:220px; margin-bottom:14px;">
+                        <img th:src="${food.image != null ? '/uploads/' + food.image : '/assets/img/hero.jpg'}" th:alt="${food.name}">
+                    </div>
+                    <h3 th:text="${food.name}">Food</h3>
+                    <p class="muted" style="margin:8px 0 10px;" th:text="${#numbers.formatDecimal(food.price, 1, 0) + ' VND'}">0 VND</p>
+                    <label th:for="${'food-' + food.id}">So luong</label>
+                    <input type="number" th:id="${'food-' + food.id}" th:name="'food_' + ${food.id}" value="0" min="0">
+                </article>
+            </div>
+
+            <div class="inline-actions">
+                <button type="submit" class="btn">Xac nhan dat mon</button>
+                <a class="btn ghost" th:href="@{/movies}">Quay lai phim</a>
+            </div>
+        </form>
+    </section>
+</div>
+</body>
+</html>

@@ -1,0 +1,52 @@
+﻿<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <script>
+    (function () {
+        const theme = localStorage.getItem('bhtnex_theme') === 'light' ? 'light' : 'dark';
+        document.documentElement.setAttribute('data-theme', theme);
+    })();
+  </script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>He thong rap</title>
+  <link rel="stylesheet" href="/css/app-theme.css">
+</head>
+<body>
+<div class="cinema-shell section-stack">
+  <section class="hero-stage" data-reveal>
+    <div class="hero-copy">
+      <span class="eyebrow">Venue guide</span>
+      <h1 class="section-title">He thong rap chieu</h1>
+      <p class="section-text">Mot trang gioi thieu rap theo phong cach premium, giup giao dien cinema co chieu sau hon thay vi chi la mot danh sach demo.</p>
+    </div>
+    <div class="poster-frame">
+      <img src="/assets/img/hero1.jpg" alt="Cinema hall">
+    </div>
+  </section>
+
+  <section class="surface-panel" data-reveal style="padding:28px;">
+    <div class="cinema-grid">
+      <article class="cinema-card">
+        <div class="cinema-thumb" style="height:220px; margin-bottom:14px;"><img src="/assets/img/hero.jpg" alt="Thu Duc"></div>
+        <h3>CGV Vincom Thu Duc</h3>
+        <p class="muted" style="margin:8px 0 14px;">216 Vo Van Ngan, Thu Duc, TP.HCM. Lobby rong, ghe ngoi moi va check-in QR nhanh.</p>
+        <a class="btn" th:href="@{/moviescate}">Xem phim tai rap nay</a>
+      </article>
+      <article class="cinema-card">
+        <div class="cinema-thumb" style="height:220px; margin-bottom:14px;"><img src="/assets/img/hero1.jpg" alt="Go Vap"></div>
+        <h3>Lotte Cinema Go Vap</h3>
+        <p class="muted" style="margin:8px 0 14px;">242 Nguyen Van Luong, Go Vap, TP.HCM. Khong gian am thanh tot va khu snack duoc mo rong.</p>
+        <a class="btn" th:href="@{/moviescate}">Xem lich chieu</a>
+      </article>
+      <article class="cinema-card">
+        <div class="cinema-thumb" style="height:220px; margin-bottom:14px;"><img src="/assets/img/hero.jpg" alt="District 1"></div>
+        <h3>BHTNex Signature Hall</h3>
+        <p class="muted" style="margin:8px 0 14px;">Phong cach lounge, hang ghe premium, layout duoc giai thich ro cho mot trainghiem dat ve hien dai.</p>
+        <a class="btn" th:href="@{/movies}">Dat ve ngay</a>
+      </article>
+    </div>
+  </section>
+</div>
+</body>
+</html>

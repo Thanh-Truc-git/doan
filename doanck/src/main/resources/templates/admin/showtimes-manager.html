@@ -1,0 +1,39 @@
+﻿<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Showtimes</title>
+    <link rel="stylesheet" href="/css/app-theme.css">
+</head>
+<body class="admin-page">
+<div class="admin-shell section-stack">
+    <section class="surface-panel" data-reveal style="padding:28px;">
+        <div class="page-header">
+            <div>
+                <span class="eyebrow">Scheduling</span>
+                <h1 class="section-title">Danh sach suat chieu</h1>
+                <p class="section-text">Showtime cards da duoc lam moi de scan nhanh ten phim, phong, gio chieu va action di kem.</p>
+            </div>
+            <div class="toolbar-actions">
+                <a class="btn" href="/admin/showtimes/create">Them suat chieu</a>
+                <a class="btn ghost" href="/admin/dashboard">Dashboard</a>
+            </div>
+        </div>
+        <div class="empty-state" th:if="${#lists.isEmpty(showtimes)}">Chua co suat chieu nao.</div>
+        <div class="showtime-grid" th:if="${!#lists.isEmpty(showtimes)}">
+            <article class="showtime-card" th:each="showtime : ${showtimes}">
+                <h3 th:text="${showtime.movie != null ? showtime.movie.title : 'Chua gan phim'}">Movie</h3>
+                <p class="muted" style="margin:8px 0;">Phong: <span th:text="${showtime.room != null ? showtime.room.name : 'Chua gan phong'}">Room</span></p>
+                <p class="muted" style="margin-bottom:14px;">Thoi gian: <span th:text="${showtime.startTime != null ? #temporals.format(showtime.startTime, 'dd/MM/yyyy HH:mm') : 'Chua co lich'}">N/A</span></p>
+                <div class="inline-actions">
+                    <a class="btn ghost" th:href="@{/seats/{id}(id=${showtime.id})}">Xem ghe</a>
+                    <a class="btn" th:href="@{/admin/showtimes/edit/{id}(id=${showtime.id})}">Sua</a>
+                    <a class="btn danger" th:href="@{/admin/showtimes/delete/{id}(id=${showtime.id})}" onclick="return confirm('Xoa suat chieu nay?')">Xoa</a>
+                </div>
+            </article>
+        </div>
+    </section>
+</div>
+</body>
+</html>
