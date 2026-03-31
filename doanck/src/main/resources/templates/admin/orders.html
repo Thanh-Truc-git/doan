@@ -1,0 +1,78 @@
+﻿<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Orders</title>
+    <link rel="stylesheet" href="/css/app-theme.css">
+</head>
+<body class="admin-page">
+<div class="admin-shell section-stack">
+    <section class="surface-panel" data-reveal style="padding:28px;">
+        <div class="page-header">
+            <div>
+                <span class="eyebrow">Commerce desk</span>
+                <h1 class="section-title">Quan ly don hang va lich su ve</h1>
+                <p class="section-text">Man hinh nay gom don hang snack/combo va lich su ve tong the de admin theo doi du lieu ban ve tren cung mot trang.</p>
+            </div>
+            <a class="btn ghost" href="/admin/dashboard">Dashboard</a>
+        </div>
+
+        <div class="metric-grid" style="margin-bottom:22px;">
+            <article class="metric-card"><h3>So don hang</h3><div class="metric-value" th:text="${orders != null ? orders.size() : 0}">0</div></article>
+            <article class="metric-card"><h3>Ve da ban</h3><div class="metric-value" th:text="${soldTicketCount}">0</div></article>
+            <article class="metric-card"><h3>Ve da check-in</h3><div class="metric-value" th:text="${checkedInTicketCount}">0</div></article>
+            <article class="metric-card"><h3>Luot booking</h3><div class="metric-value" th:text="${bookingCount}">0</div></article>
+            <article class="metric-card"><h3>Doanh thu ve</h3><div class="metric-value" th:text="${#numbers.formatDecimal(soldTicketRevenue, 1, 0) + ' VND'}">0 VND</div></article>
+        </div>
+
+        <div class="section-stack">
+            <section class="admin-panel" style="padding:22px;">
+                <div class="page-header"><div><h3>Danh sach don hang</h3><p class="panel-note">Don snack/combo va trang thai xu ly hien tai.</p></div></div>
+                <div th:if="${orders == null || #lists.isEmpty(orders)}" class="empty-state">Chua co don hang nao.</div>
+                <div class="table-wrap" th:if="${orders != null && !#lists.isEmpty(orders)}">
+                    <table>
+                        <thead><tr><th>ID</th><th>Nguoi dung</th><th>Thoi gian</th><th>Tong tien</th><th>Giam gia</th><th>Thanh toan cuoi</th><th>Trang thai</th><th>Khuyen mai</th><th>Thao tac</th></tr></thead>
+                        <tbody>
+                        <tr th:each="order : ${orders}">
+                            <td th:text="${order.id}">1</td>
+                            <td th:text="${order.user != null ? order.user.username : 'N/A'}">user</td>
+                            <td th:text="${order.orderTime != null ? #temporals.format(order.orderTime, 'dd/MM/yyyy HH:mm') : 'N/A'}">N/A</td>
+                            <td th:text="${#numbers.formatDecimal(order.totalAmount, 1, 0) + ' VND'}">0 VND</td>
+                            <td th:text="${#numbers.formatDecimal(order.discountAmount, 1, 0) + ' VND'}">0 VND</td>
+                            <td th:text="${#numbers.formatDecimal(order.finalAmount, 1, 0) + ' VND'}">0 VND</td>
+                            <td><span class="status-chip" th:text="${order.status != null ? order.status : 'PENDING'}">PENDING</span></td>
+                            <td th:text="${order.promotion != null ? order.promotion.code : 'Khong'}">Khong</td>
+                            <td><div class="inline-actions"><a class="btn success" th:href="@{/admin/orders/{id}/paid(id=${order.id})}">Paid</a><a class="btn warning" th:href="@{/admin/orders/{id}/complete(id=${order.id})}">Complete</a><a class="btn danger" th:href="@{/admin/orders/{id}/cancel(id=${order.id})}">Cancel</a></div></td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <section class="admin-panel" style="padding:22px;">
+                <div class="page-header"><div><h3>Lich su ve tong the</h3><p class="panel-note">Danh sach ve duoc sap xep theo thoi diem dat ve hoac booking moi nhat.</p></div><a class="btn ghost" href="/admin/tickets">Mo trang quan ly ve</a></div>
+                <div th:if="${tickets == null || #lists.isEmpty(tickets)}" class="empty-state">Chua co du lieu ve nao.</div>
+                <div class="table-wrap" th:if="${tickets != null && !#lists.isEmpty(tickets)}">
+                    <table>
+                        <thead><tr><th>Booking</th><th>Ma ve</th><th>Nguoi dung</th><th>Phim</th><th>Ghe</th><th>Suat chieu</th><th>Thoi gian dat</th><th>Trang thai</th></tr></thead>
+                        <tbody>
+                        <tr th:each="ticket : ${tickets}">
+                            <td th:text="${ticket.booking != null ? '#' + ticket.booking.id : 'Chua gan'}">#1</td>
+                            <td th:text="${ticket.ticketCode != null ? ticket.ticketCode : 'N/A'}">TICKET</td>
+                            <td th:text="${ticket.user != null ? ticket.user.username : 'N/A'}">user</td>
+                            <td th:text="${ticket.showtime != null && ticket.showtime.movie != null ? ticket.showtime.movie.title : 'N/A'}">movie</td>
+                            <td th:text="${ticket.seatNumber != null ? ticket.seatNumber : 'N/A'}">A1</td>
+                            <td th:text="${ticket.showtime != null && ticket.showtime.startTime != null ? #temporals.format(ticket.showtime.startTime, 'dd/MM/yyyy HH:mm') : 'N/A'}">N/A</td>
+                            <td th:text="${ticket.booking != null && ticket.booking.bookingTime != null ? #temporals.format(ticket.booking.bookingTime, 'dd/MM/yyyy HH:mm') : 'N/A'}">N/A</td>
+                            <td><span class="status-chip" th:text="${ticket.status != null ? ticket.status : 'PENDING'}">BOOKED</span></td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+        </div>
+    </section>
+</div>
+</body>
+</html>

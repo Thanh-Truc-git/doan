@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin - Check In Vé</title>
+    <style>
+        body{font-family:Arial,sans-serif;background:#0f172a;color:#fff;margin:0;padding:24px}
+        .wrap{max-width:900px;margin:0 auto}
+        .top{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:20px}
+        .btn{display:inline-block;background:#334155;color:#fff;text-decoration:none;padding:10px 14px;border-radius:10px;border:none;cursor:pointer}
+        .btn.primary{background:#2563eb}
+        .card{background:#172033;border:1px solid #2b3954;border-radius:18px;padding:20px;margin-bottom:18px}
+        .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:16px}
+        label{display:block;margin-bottom:8px;color:#cbd5e1;font-weight:600}
+        input[type="text"],input[type="file"]{width:100%;padding:12px;border-radius:10px;border:1px solid #334155;background:#0f172a;color:#fff}
+        .hint{margin:8px 0 0;color:#94a3b8;font-size:14px}
+        .result{padding:14px 16px;border-radius:12px;margin-bottom:18px}
+        .result.success{background:#14532d;border:1px solid #22c55e}
+        .result.error{background:#7f1d1d;border:1px solid #ef4444}
+        .ticket-info{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px}
+        .info{background:#0f172a;border:1px solid #334155;border-radius:12px;padding:14px}
+        .info h4{margin:0 0 8px;color:#94a3b8;font-size:13px}
+        .info p{margin:0;font-size:16px;font-weight:700}
+    </style>
+    <link rel="stylesheet" href="/css/app-theme.css">
+</head>
+<body>
+<div class="wrap">
+    <div class="top">
+        <div>
+            <h2>Check-in vé bằng QR</h2>
+            <p class="hint">Dán mã vé hoặc tải lên ảnh QR của người dùng để xác nhận vào rạp.</p>
+        </div>
+        <div>
+            <a class="btn" href="/admin/tickets">Danh sách vé</a>
+            <a class="btn" href="/admin/dashboard">Dashboard</a>
+        </div>
+    </div>
+
+    <div th:if="${resultMessage != null}" class="result" th:classappend="${resultType == 'success'} ? ' success' : ' error'">
+        <strong th:text="${resultMessage}">Kết quả check-in</strong>
+    </div>
+
+    <div class="card">
+        <form method="post" action="/admin/tickets/check-in" enctype="multipart/form-data">
+            <div class="grid">
+                <div>
+                    <label for="scanValue">Mã vé hoặc nội dung QR</label>
+                    <input id="scanValue" type="text" name="scanValue" th:value="${scanValue}" placeholder="Ví dụ: TICKET-123456">
+                    <p class="hint">Có thể dán trực tiếp `ticketCode` hoặc chuỗi đọc ra từ QR.</p>
+                </div>
+                <div>
+                    <label for="qrFile">Ảnh QR vé</label>
+                    <input id="qrFile" type="file" name="qrFile" accept="image/*">
+                    <p class="hint">Nếu không nhập mã vé, hệ thống sẽ tự decode từ ảnh QR.</p>
+                </div>
+            </div>
+            <div style="margin-top:16px">
+                <button class="btn primary" type="submit">Xác nhận check-in</button>
+            </div>
+        </form>
+    </div>
+
+    <div class="card" th:if="${checkedTicket != null}">
+        <h3 style="margin-top:0">Thông tin vé</h3>
+        <div class="ticket-info">
+            <div class="info">
+                <h4>Mã vé</h4>
+                <p th:text="${checkedTicket.ticketCode != null ? checkedTicket.ticketCode : 'N/A'}">N/A</p>
+            </div>
+            <div class="info">
+                <h4>Người dùng</h4>
+                <p th:text="${checkedTicket.user != null ? checkedTicket.user.username : 'N/A'}">N/A</p>
+            </div>
+            <div class="info">
+                <h4>Ghế</h4>
+                <p th:text="${checkedTicket.seatNumber != null ? checkedTicket.seatNumber : 'N/A'}">N/A</p>
+            </div>
+            <div class="info">
+                <h4>Trạng thái</h4>
+                <p th:text="${checkedTicket.status != null ? checkedTicket.status : 'PENDING'}">PENDING</p>
+            </div>
+            <div class="info">
+                <h4>Phim</h4>
+                <p th:text="${checkedTicket.showtime != null && checkedTicket.showtime.movie != null ? checkedTicket.showtime.movie.title : 'Chưa có phim'}">N/A</p>
+            </div>
+            <div class="info">
+                <h4>Suất chiếu</h4>
+                <p th:text="${checkedTicket.showtime != null && checkedTicket.showtime.startTime != null ? #temporals.format(checkedTicket.showtime.startTime, 'dd/MM/yyyy HH:mm') : 'Chưa có suất chiếu'}">N/A</p>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>

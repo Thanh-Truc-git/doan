@@ -1,10 +1,37 @@
-<!DOCTYPE html>
-<html lang="en">
+﻿<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>Title</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Users</title>
+    <link rel="stylesheet" href="/css/app-theme.css">
 </head>
-<body>
-
+<body class="admin-page">
+<div class="admin-shell section-stack">
+    <section class="surface-panel" data-reveal style="padding:28px;">
+        <div class="page-header">
+            <div>
+                <span class="eyebrow">Audience</span>
+                <h1 class="section-title">Danh sach nguoi dung</h1>
+                <p class="section-text">Bang users da duoc canh lai theo workspace admin moi: ro role, de scan va nhat quan voi tickets, orders va promotions.</p>
+            </div>
+            <a class="btn ghost" href="/admin/dashboard">Dashboard</a>
+        </div>
+        <div class="empty-state" th:if="${#lists.isEmpty(users)}">Chua co nguoi dung nao.</div>
+        <div class="table-wrap" th:if="${!#lists.isEmpty(users)}">
+            <table>
+                <thead><tr><th>ID</th><th>Username</th><th>Email</th><th>Role</th></tr></thead>
+                <tbody>
+                <tr th:each="user : ${users}">
+                    <td th:text="${user.id}">1</td>
+                    <td th:text="${user.username}">user</td>
+                    <td th:text="${user.email}">email</td>
+                    <td><span class="status-chip" th:text="${user.role}">USER</span></td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </section>
+</div>
 </body>
 </html>

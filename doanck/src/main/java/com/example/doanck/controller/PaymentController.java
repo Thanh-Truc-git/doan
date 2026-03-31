@@ -1,155 +1,175 @@
 package com.example.doanck.controller;
 
-import java.text.SimpleDateFormat;
-import java.util.*;
-
-import com.example.doanck.service.BookingService;
-import org.springframework.security.core.Authentication;
-import com.example.doanck.model.User;
-import com.example.doanck.service.UserService;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.*;
-
 import com.example.doanck.config.VNPayConfig;
+import com.example.doanck.model.Movie;
+import com.example.doanck.model.PendingTicketOrder;
 import com.example.doanck.model.Showtime;
-import com.example.doanck.model.Ticket;
+import com.example.doanck.model.User;
+import com.example.doanck.repository.PendingTicketOrderRepository;
 import com.example.doanck.repository.ShowtimeRepository;
+import com.example.doanck.service.MovieService;
+import com.example.doanck.service.TicketService;
+import com.example.doanck.service.UserService;
+import com.example.doanck.service.VoucherService;
 import com.example.doanck.util.VNPayUtil;
-
-import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.util.UriComponentsBuilder;
+
+import java.security.Principal;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
 @Controller
 @RequestMapping("/payment")
 public class PaymentController {
 
-    @Autowired
-    private ShowtimeRepository showtimeRepository;
+    private final PendingTicketOrderRepository pendingTicketOrderRepository;
+    private final ShowtimeRepository showtimeRepository;
+    private final MovieService movieService;
+    private final VoucherService voucherService;
+    private final UserService userService;
 
-    @Autowired
-    private UserService userService;
+    public PaymentController(
+            PendingTicketOrderRepository pendingTicketOrderRepository,
+            ShowtimeRepository showtimeRepository,
+            MovieService movieService,
+            VoucherService voucherService,
+            UserService userService) {
+        this.pendingTicketOrderRepository = pendingTicketOrderRepository;
+        this.showtimeRepository = showtimeRepository;
+        this.movieService = movieService;
+        this.voucherService = voucherService;
+        this.userService = userService;
+    }
 
-    @Autowired
-    private BookingService bookingService;
-
-    // =========================
-    // CREATE PAYMENT
-    // =========================
     @GetMapping("/create")
     public String createPayment(
-            @RequestParam String seats,
-            @RequestParam Long showtime,
-            HttpSession session){
+            @RequestParam(required = false) String seats,
+            @RequestParam(required = false) Long showtime,
+            @RequestParam(required = false) Long movieId,
+            @RequestParam(required = false) String voucherCode,
+            HttpSession session,
+            Principal principal) {
 
-        if(seats == null || seats.trim().isEmpty()){
-            return "redirect:/movies";
+        if (principal == null) {
+            return "redirect:/login";
         }
 
-        Showtime show = showtimeRepository.findById(showtime).orElse(null);
-
-        if(show == null){
-            return "redirect:/movies";
-        }
-
-        // 👉 Lưu session
-        session.setAttribute("seats", seats);
-        session.setAttribute("showtime", showtime);
-
-        String[] seatArr = seats.split(",");
-
-        int quantity = 0;
-        for(String seat : seatArr){
-            if(!seat.trim().isEmpty()){
-                quantity++;
+        Showtime activeShowtime = null;
+        if (showtime != null) {
+            activeShowtime = showtimeRepository.findById(showtime).orElse(null);
+            if (!movieService.isShowtimeActive(activeShowtime)) {
+                return "redirect:/movies?expired=1";
             }
+            if (activeShowtime.getMovie() != null) {
+                movieId = activeShowtime.getMovie().getId();
+            }
+        } else if (movieId != null) {
+            Movie movie = movieService.getMovieById(movieId);
+            activeShowtime = movieService.getNextAvailableShowtime(movie);
+            if (!movieService.isShowtimeActive(activeShowtime)) {
+                return "redirect:/movies?expired=1";
+            }
+            showtime = activeShowtime.getId();
+        } else {
+            return "redirect:/movies";
         }
 
-        double total = show.getPrice() * quantity;
-        long vnpAmount = (long)(total * 100);
+        if (seats != null) {
+            session.setAttribute("seats", seats);
+        }
+        session.setAttribute("showtime", showtime);
+        session.setAttribute("movieId", movieId);
+        session.setAttribute("username", principal.getName());
 
-        Map<String,String> params = new HashMap<>();
+        int seatCount = resolveSeatCount(seats);
+        double totalAmount = seatCount * TicketService.DEFAULT_TICKET_PRICE;
+        User user = userService.findByUsername(principal.getName());
+        double voucherDiscount = voucherService.previewDiscount(voucherCode, user, totalAmount);
 
-        params.put("vnp_Version","2.1.0");
-        params.put("vnp_Command","pay");
-        params.put("vnp_TmnCode",VNPayConfig.vnp_TmnCode);
-        params.put("vnp_Amount",String.valueOf(vnpAmount));
-        params.put("vnp_CurrCode","VND");
+        if (voucherCode != null && !voucherCode.isBlank() && voucherDiscount <= 0) {
+            return redirectSeatMapWithVoucherError(movieId, showtime, "invalid");
+        }
 
-        params.put("vnp_TxnRef",String.valueOf(System.currentTimeMillis()));
-        params.put("vnp_OrderInfo","Thanh toan ve phim");
-        params.put("vnp_OrderType","other");
-        params.put("vnp_Locale","vn");
-        params.put("vnp_IpAddr","127.0.0.1");
+        double finalAmount = Math.max(0, totalAmount - voucherDiscount);
 
-        params.put("vnp_ReturnUrl",VNPayConfig.vnp_ReturnUrl);
+        Map<String, String> params = new HashMap<>();
+        String txnRef = String.valueOf(System.currentTimeMillis());
+
+        params.put("vnp_Version", "2.1.0");
+        params.put("vnp_Command", "pay");
+        params.put("vnp_TmnCode", VNPayConfig.vnp_TmnCode);
+        params.put("vnp_Amount", String.valueOf((long) (finalAmount * 100)));
+        params.put("vnp_CurrCode", "VND");
+        params.put("vnp_TxnRef", txnRef);
+        params.put("vnp_OrderInfo", "Thanh toan ve phim");
+        params.put("vnp_OrderType", "other");
+        params.put("vnp_Locale", "vn");
+        params.put("vnp_IpAddr", "127.0.0.1");
+
+        PendingTicketOrder pendingTicketOrder = new PendingTicketOrder();
+        pendingTicketOrder.setTxnRef(txnRef);
+        pendingTicketOrder.setUsername(principal.getName());
+        pendingTicketOrder.setSeats(seats);
+        pendingTicketOrder.setShowtimeId(showtime);
+        pendingTicketOrder.setMovieId(movieId);
+        pendingTicketOrder.setProcessed(false);
+        pendingTicketOrder.setSeatCount(seatCount);
+        pendingTicketOrder.setTotalAmount(totalAmount);
+        pendingTicketOrder.setFinalAmount(finalAmount);
+        pendingTicketOrder.setVoucherDiscountAmount(voucherDiscount);
+        pendingTicketOrder.setAppliedVoucherCode(
+                voucherCode != null && !voucherCode.isBlank() ? voucherCode.trim() : null);
+        pendingTicketOrderRepository.save(pendingTicketOrder);
+
+        if (finalAmount <= 0) {
+            pendingTicketOrder.setProcessed(true);
+            pendingTicketOrderRepository.save(pendingTicketOrder);
+            return "redirect:/payment-return?vnp_ResponseCode=00&vnp_TxnRef=" + txnRef;
+        }
+
+        String returnUrl = UriComponentsBuilder
+                .fromUriString(VNPayConfig.vnp_ReturnUrl)
+                .queryParam("seats", seats)
+                .queryParam("showtime", showtime)
+                .queryParam("movieId", movieId)
+                .queryParam("username", principal.getName())
+                .build()
+                .toUriString();
+
+        params.put("vnp_ReturnUrl", returnUrl);
 
         SimpleDateFormat formatter = new SimpleDateFormat("yyyyMMddHHmmss");
-        params.put("vnp_CreateDate",formatter.format(new Date()));
+        params.put("vnp_CreateDate", formatter.format(new Date()));
 
         String query = VNPayUtil.createQueryString(params);
-
-        String secureHash =
-                VNPayUtil.hmacSHA512(
-                        VNPayConfig.vnp_HashSecret,
-                        query);
-
+        String secureHash = VNPayUtil.hmacSHA512(VNPayConfig.vnp_HashSecret, query);
         query += "&vnp_SecureHash=" + secureHash;
 
         return "redirect:" + VNPayConfig.vnp_Url + "?" + query;
     }
 
-    // =========================
-    // PAYMENT RETURN
-    // =========================
-    @GetMapping("/return")
-    public String paymentReturn(
-            HttpServletRequest request,
-            HttpSession session,
-            Authentication authentication) {
-
-        String responseCode = request.getParameter("vnp_ResponseCode");
-
-        if (!"00".equals(responseCode)) {
-            return "redirect:/movies";
+    private int resolveSeatCount(String seats) {
+        if (seats == null || seats.isBlank()) {
+            return 0;
         }
 
-        String seats = (String) session.getAttribute("seats");
-        Long showtimeId = (Long) session.getAttribute("showtime");
+        return (int) java.util.Arrays.stream(seats.split(","))
+                .map(String::trim)
+                .filter(value -> !value.isBlank())
+                .count();
+    }
 
-        if(seats == null || showtimeId == null){
-            return "redirect:/movies";
+    private String redirectSeatMapWithVoucherError(Long movieId, Long showtimeId, String errorCode) {
+        if (movieId != null) {
+            return "redirect:/seat-map/" + movieId + "?voucherError=" + errorCode;
         }
-
-        Showtime showtime =
-                showtimeRepository.findById(showtimeId).orElse(null);
-
-        if(showtime == null){
-            return "redirect:/movies";
-        }
-
-        String username = authentication.getName();
-        User user = userService.findByUsername(username);
-
-        List<String> seatList = Arrays.asList(seats.split(","));
-
-        // 🔥 FIX QUAN TRỌNG: tạo bookingCode tại đây
-        String bookingCode = UUID.randomUUID().toString();
-
-        Ticket baseTicket = new Ticket();
-        baseTicket.setShowtime(showtime);
-        baseTicket.setUser(user);
-        baseTicket.setBookingCode(bookingCode); // 🔥 thêm dòng này
-
-        bookingService.bookSeat(
-                seatList,
-                baseTicket,
-                user.getRole()
-        );
-
-        session.removeAttribute("seats");
-        session.removeAttribute("showtime");
-
-        return "redirect:/tickets";
+        return "redirect:/movies?voucherError=" + errorCode;
     }
 }

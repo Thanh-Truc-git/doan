@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin - Payments</title>
+    <style>
+        body{font-family:Arial,sans-serif;background:#121212;color:#fff;margin:0;padding:20px}
+        .top{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:20px;flex-wrap:wrap}
+        a.btn{background:#374151;color:#fff;text-decoration:none;padding:10px 14px;border-radius:8px}
+        table{width:100%;border-collapse:collapse;background:#1f1f1f;border-radius:12px;overflow:hidden}
+        th,td{padding:12px;border-bottom:1px solid #2a2a2a;text-align:left}
+        th{background:#181818}
+    </style>
+    <link rel="stylesheet" href="/css/app-theme.css">
+</head>
+<body>
+<div class="top">
+    <h2>Quản lý thanh toán</h2>
+    <a class="btn" href="/admin/dashboard">Dashboard</a>
+</div>
+<table>
+    <thead>
+    <tr>
+        <th>ID</th>
+        <th>Số tiền</th>
+        <th>Trạng thái</th>
+        <th>Phương thức</th>
+        <th>Thời gian</th>
+        <th>Booking ID</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr th:each="payment : ${payments}">
+        <td th:text="${payment.id}">1</td>
+        <td th:text="${payment.amount}">0</td>
+        <td th:text="${payment.status != null ? payment.status : 'N/A'}">N/A</td>
+        <td th:text="${payment.method != null ? payment.method : 'N/A'}">N/A</td>
+        <td th:text="${payment.paymentTime != null ? #temporals.format(payment.paymentTime, 'dd/MM/yyyy HH:mm') : 'N/A'}">N/A</td>
+        <td th:text="${payment.booking != null ? payment.booking.id : 'N/A'}">N/A</td>
+    </tr>
+    </tbody>
+</table>
+</body>
+</html>

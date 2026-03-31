@@ -12,8 +12,6 @@ public class Showtime {
 
     private LocalDateTime startTime;
 
-    private Double price;
-
     @ManyToOne
     private Movie movie;
 
@@ -38,10 +36,6 @@ public class Showtime {
         return room;
     }
 
-    public Double getPrice() {
-        return price;
-    }
-
     public void setId(Long id) {
         this.id = id;
     }
@@ -58,7 +52,4 @@ public class Showtime {
         this.room = room;
     }
 
-    public void setPrice(Double price) {
-        this.price = price;
-    }
 }

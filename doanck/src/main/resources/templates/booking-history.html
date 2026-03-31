@@ -1,0 +1,58 @@
+﻿<!doctype html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <script>
+        (function () {
+            const theme = localStorage.getItem('bhtnex_theme') === 'light' ? 'light' : 'dark';
+            document.documentElement.setAttribute('data-theme', theme);
+        })();
+    </script>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>Booking History</title>
+    <link rel="stylesheet" href="/css/app-theme.css">
+</head>
+<body>
+<div class="account-shell section-stack">
+    <section class="surface-panel" data-reveal style="padding:28px;">
+        <div class="page-header">
+            <div>
+                <span class="eyebrow">Booking log</span>
+                <h1 class="section-title">Lich su dat ve</h1>
+                <p class="section-text">Tai khoan: <strong th:text="${username}">User</strong></p>
+            </div>
+            <div class="inline-actions">
+                <a class="btn"
+                   th:if="${isAdmin}"
+                   th:href="@{/admin/dashboard}">Dashboard admin</a>
+                <a class="btn ghost" th:href="@{/movies}">Quay lai movies</a>
+            </div>
+        </div>
+        <div th:if="${#lists.isEmpty(tickets)}" class="empty-state">Ban chua co ve nao da dat.</div>
+        <div class="table-wrap" th:if="${not #lists.isEmpty(tickets)}">
+            <table>
+                <thead>
+                <tr>
+                    <th>Movie</th>
+                    <th>Seat</th>
+                    <th>Showtime</th>
+                    <th>QR</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="ticket : ${tickets}">
+                    <td th:text="${ticket.showtime != null && ticket.showtime.movie != null ? ticket.showtime.movie.title : 'N/A'}">N/A</td>
+                    <td th:text="${ticket.seatNumber}">A1</td>
+                    <td th:text="${ticket.showtime != null && ticket.showtime.startTime != null ? #temporals.format(ticket.showtime.startTime, 'dd/MM/yyyy HH:mm') : 'N/A'}">N/A</td>
+                    <td>
+                        <img style="width:84px;height:84px;border-radius:14px;object-fit:cover;background:#fff;" th:if="${ticket.qrCode != null and !#strings.isEmpty(ticket.qrCode)}" th:src="${ticket.qrCode}" alt="QR">
+                        <span th:if="${ticket.qrCode == null or #strings.isEmpty(ticket.qrCode)}" class="muted">N/A</span>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </section>
+</div>
+</body>
+</html>

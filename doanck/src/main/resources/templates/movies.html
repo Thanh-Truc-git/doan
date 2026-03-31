@@ -1,165 +1,261 @@
-<!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org"
-      th:replace="layout :: layout(~{::body})">
+﻿<!doctype html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <script>
+        (function () {
+            const theme = localStorage.getItem('bhtnex_theme') === 'light' ? 'light' : 'dark';
+            document.documentElement.setAttribute('data-theme', theme);
+        })();
+    </script>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>BHTNex Cinema | Home</title>
+    <link rel="stylesheet" href="/css/sidebar.css">
+    <link rel="stylesheet" href="/css/app-theme.css">
+</head>
+<body class="cinema-page">
+<header class="topbar-fixed" role="banner" aria-label="Thanh dieu huong chinh">
+    <div class="topbar-inner">
+        <div class="topbar-left">
+            <button class="hamburger" id="btnMenu" aria-label="Mo menu" aria-expanded="false">☰</button>
+            <nav class="nav-links" role="navigation" aria-label="Dieu huong nhanh">
+                <a class="nav-link" th:href="@{/}">Trang chủ</a>
+                <a class="nav-link" th:href="@{/moviescate}">Phim</a>
+                <a class="nav-link" th:href="@{/cinemas}">Rạp chiếu</a>
+            </nav>
+        </div>
 
-<body>
-
-<h2 style="text-align:center">PHIM ĐANG CHIẾU</h2>
-
-<div class="movies">
-    <div class="movie-card" th:each="movie : ${movies}">
-
-        <img th:src="${movie.poster != null}
-    ? @{/uploads/{img}(img=${movie.poster})}
-    : 'https://via.placeholder.com/300x400'">
-
-        <div class="overlay">
-
-            <a th:href="@{/showtimes/movie/{id}(id=${movie.id})}">
-                <button class="btn buy">Mua vé</button>
+        <div class="topbar-right">
+            <a class="btn ghost"
+               th:if="${isAdmin}"
+               th:href="@{/admin/dashboard}">
+                Admin Dashboard
             </a>
-
-            <button class="btn btn-danger watch-trailer"
-                    th:data-url="${movie.trailerUrl}">
-                ▶ Watch Trailer
-            </button>
+            <a id="topBookBtn"
+               class="btn btn-yellow"
+               th:href="${featuredMovie != null && featuredMovie.id != null ? '/seat-map/' + featuredMovie.id : '/movies'}">
+                Đặt vé nhanh
+            </a>
+            <a class="btn btn-purple" th:href="@{/orders/snacks}">Snack lounge</a>
+            <a class="icon-btn" th:href="@{/notifications}" aria-label="Thong bao">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                    <path d="M15 17H9a3 3 0 006 0z" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
+                    <path d="M18 8a6 6 0 10-12 0v5l-2 2h16l-2-2V8z" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+            </a>
+            <div class="profile-wrap" id="profileWrap">
+                <button class="profile-btn" id="profileBtn" aria-haspopup="true" aria-expanded="false">
+                    <span class="avatar"
+                          th:text="${username != null && !#strings.isEmpty(username) ? #strings.toUpperCase(#strings.substring(username, 0, 1)) : 'U'}">U</span>
+                    <span class="profile-name" th:text="${username != null ? username : 'User'}">User</span>
+                </button>
+                <div class="profile-menu" id="profileMenu" role="menu" aria-hidden="true">
+                    <a role="menuitem"
+                       class="menu-item"
+                       th:if="${isAdmin}"
+                       th:href="@{/admin/dashboard}">Admin Dashboard</a>
+                    <a role="menuitem" class="menu-item" th:href="@{/profile}">Tai khoan</a>
+                    <a role="menuitem" class="menu-item" th:href="@{/settings}">Cai dat</a>
+                    <a role="menuitem" class="menu-item danger" th:href="@{/logout}">Dang xuat</a>
+                </div>
+            </div>
         </div>
     </div>
+</header>
+
+<aside class="sidebar" aria-label="Thanh dieu huong ben">
+    <div class="sidebar-top">
+        <div class="brand">
+            <span class="brand-logo">BHTNex</span>
+        </div>
+        <button class="collapse-btn" id="collapseBtn" aria-pressed="false" aria-label="Thu gon menu">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                <path d="M9 6l6 6-6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+        </button>
+    </div>
+
+    <nav class="nav" role="navigation" aria-label="Menu chinh">
+        <a class="nav-item active" th:href="@{/}"><span class="icon">⌂</span><span class="label">Trang chu</span></a>
+        <a class="nav-item" th:href="@{/profile}"><span class="icon">◎</span><span class="label">Tai khoan</span></a>
+        <a class="nav-item" th:href="@{/favourites}"><span class="icon">♡</span><span class="label">Yeu thich</span></a>
+        <a class="nav-item" th:href="@{/tickets}"><span class="icon">◫</span><span class="label">Ve cua toi</span></a>
+        <a class="nav-item" th:href="@{/booking-history}"><span class="icon">◷</span><span class="label">Lich su dat ve</span></a>
+        <a class="nav-item" th:href="@{/notifications}"><span class="icon">✦</span><span class="label">Thong bao</span></a>
+        <a class="nav-item" th:href="@{/settings}"><span class="icon">⚙</span><span class="label">Cai dat</span></a>
+        <a class="nav-item danger" th:href="@{/logout}"><span class="icon">↗</span><span class="label">Dang xuat</span></a>
+    </nav>
+</aside>
+
+<div class="main-area">
+    <main class="content section-stack">
+        <section class="hero" data-reveal>
+            <div class="hero-inner hero-stage">
+                <div class="hero-copy">
+                    <span class="eyebrow">Premiere spotlight</span>
+                    <h1 id="heroTitle" class="display-title"
+                        th:text="${featuredMovie != null ? featuredMovie.title : 'Chon bo phim ban muon xem toi nay'}">
+                        Featured movie
+                    </h1>
+                    <p id="heroMeta" class="lead"
+                       th:text="${featuredMovie != null ? ((featuredMovie.duration != null ? featuredMovie.duration + ' phut' : 'Dang cap nhat') + ' • ' + (featuredMovie.genre != null ? featuredMovie.genre : 'The loai dang cap nhat')) : 'Kham pha nhung tua phim dang chieu va dat ghe trong vai cham.'}">
+                        Movie meta
+                    </p>
+                    <p id="heroShowtime" class="hero-showtime"
+                       th:text="${featuredMovie != null && featuredMovie.showtimes != null && !#lists.isEmpty(featuredMovie.showtimes) && featuredMovie.showtimes[0].startTime != null ? 'Lich chieu: ' + #temporals.format(featuredMovie.showtimes[0].startTime, 'dd/MM/yyyy HH:mm') : 'Chua co lich chieu'}">
+                        Showtime
+                    </p>
+                    <div class="hero-actions">
+                        <a id="heroBookBtn"
+                           class="btn"
+                           th:href="${featuredMovie != null && featuredMovie.id != null ? '/seat-map/' + featuredMovie.id : '/movies'}">
+                            Dat ve ngay
+                        </a>
+                        <a id="heroTrailerBtn"
+                           class="btn ghost"
+                           target="_blank"
+                           rel="noopener noreferrer"
+                           th:href="${featuredMovie != null && featuredMovie.trailerUrl != null && !#strings.isEmpty(featuredMovie.trailerUrl) ? featuredMovie.trailerUrl : '#'}">
+                            Xem trailer
+                        </a>
+                    </div>
+                    <div class="metric-grid">
+                        <article class="metric-card">
+                            <h3>Phim dang chieu</h3>
+                            <div class="metric-value" th:text="${movies != null ? movies.size() : 0}">0</div>
+                        </article>
+                        <article class="metric-card">
+                            <h3>Combo uu dai</h3>
+                            <div class="metric-value" th:text="${combos != null ? combos.size() : 0}">0</div>
+                        </article>
+                    </div>
+                </div>
+
+                <div class="hero-image" data-reveal>
+                    <img id="heroImg"
+                         th:src="${featuredMovie != null && featuredMovie.poster != null ? '/uploads/' + featuredMovie.poster : '/assets/img/hero.jpg'}"
+                         src="/assets/img/hero.jpg"
+                         alt="Poster phim noi bat">
+                </div>
+            </div>
+        </section>
+
+        <section class="surface-panel" data-reveal>
+            <div class="page-header">
+                <div>
+                    <span class="section-kicker">Now showing</span>
+                    <h2 class="section-title">Danh sach phim dang chieu</h2>
+                </div>
+                <p class="section-text">Chon the phim de cap nhat poster hero, lich chieu va nut dat ve o phia tren.</p>
+            </div>
+
+            <div id="nowShowing" class="movie-slider">
+                <div class="movie-list">
+                    <div th:if="${#lists.isEmpty(movies)}" class="empty-state">
+                        Chua co phim de hien thi. Hay them phim trong trang quan tri.
+                    </div>
+
+                    <article th:each="movie : ${movies}"
+                             class="movie-card"
+                             th:data-id="${movie.id}"
+                             th:data-title="${movie.title}"
+                             th:data-genre="${movie.genre}"
+                             th:data-duration="${movie.duration}"
+                             th:data-showtime="${movie.showtimes != null && !#lists.isEmpty(movie.showtimes) && movie.showtimes[0].startTime != null ? #temporals.format(movie.showtimes[0].startTime, 'dd/MM/yyyy HH:mm') : ''}"
+                             th:data-showtime-iso="${movie.showtimes != null && !#lists.isEmpty(movie.showtimes) && movie.showtimes[0].startTime != null ? #temporals.format((movie.duration != null ? movie.showtimes[0].startTime.plusMinutes(movie.duration) : movie.showtimes[0].startTime), 'yyyy-MM-dd''T''HH:mm:ss') : ''}"
+                             th:data-trailer="${movie.trailerUrl}"
+                             th:data-poster="${movie.poster != null && !#strings.isEmpty(movie.poster) ? '/uploads/' + movie.poster : '/assets/img/hero.jpg'}">
+                        <button type="button" class="btn-fav" aria-label="Them vao yeu thich" aria-pressed="false">♡</button>
+                        <div class="movie-img">
+                            <img th:src="${movie.poster != null && !#strings.isEmpty(movie.poster) ? '/uploads/' + movie.poster : '/assets/img/hero.jpg'}"
+                                 th:alt="${movie.title}">
+                        </div>
+                        <div class="movie-info">
+                            <h3 th:text="${movie.title}">Ten phim</h3>
+                            <p th:text="${(movie.duration != null ? movie.duration + ' phut • ' : '') + (movie.genre != null ? movie.genre : 'Dang cap nhat')}">120 phut • Hanh dong</p>
+                            <p class="movie-showtime"
+                               th:text="${movie.showtimes != null && !#lists.isEmpty(movie.showtimes) && movie.showtimes[0].startTime != null ? 'Lich chieu: ' + #temporals.format(movie.showtimes[0].startTime, 'dd/MM/yyyy HH:mm') : 'Chua co lich chieu'}">
+                                Lich chieu
+                            </p>
+                        </div>
+                        <a th:href="${movie.id != null ? '/seat-map/' + movie.id : '/movies'}" class="btn-book">Dat ve</a>
+                    </article>
+                </div>
+            </div>
+        </section>
+
+        <section class="split-layout" data-reveal>
+            <div class="surface-panel">
+                <div class="page-header">
+                    <div>
+                        <span class="section-kicker">Snack lounge</span>
+                        <h2 class="section-title">Combo ưu đãi trong rạp</h2>
+                    </div>
+                    <p class="section-text">Chọn nhanh combo trước khi thanh toán để đơn hàng gọn gàng hơn và không bỏ lỡ các ưu đãi hấp dẫn.</p>
+                </div>
+                <div class="combo-grid" th:if="${combos != null && !#lists.isEmpty(combos)}">
+                    <article class="combo-card" th:each="combo : ${combos}">
+                        <div class="combo-image-wrap">
+                            <img class="combo-image"
+                                 th:if="${combo.image != null && !#strings.isEmpty(combo.image)}"
+                                 th:src="@{'/uploads/' + ${combo.image}}"
+                                 th:alt="${combo.name}">
+                            <div class="combo-image combo-placeholder"
+                                 th:if="${combo.image == null || #strings.isEmpty(combo.image)}">
+                                Dang cap nhat hinh anh
+                            </div>
+                        </div>
+                        <div class="combo-content">
+                            <h3 th:text="${combo.name}">Combo</h3>
+                            <p class="combo-desc"
+                               th:text="${combo.description != null && !#strings.isEmpty(combo.description) ? combo.description : 'Combo danh cho mot buoi xem phim tron ven.'}">
+                                Mo ta combo
+                            </p>
+                            <div class="combo-price">
+                                <span class="combo-discounted"
+                                      th:text="${#numbers.formatDecimal(combo.discountedPrice, 1, 0) + ' VND'}">0 VND</span>
+                                <span class="combo-original"
+                                      th:text="${#numbers.formatDecimal(combo.originalPrice, 1, 0) + ' VND'}">0 VND</span>
+                            </div>
+                            <p class="combo-meta"
+                               th:text="${'Tiet kiem ' + #numbers.formatDecimal(combo.discountPercent, 1, 1) + '% • Con ' + combo.quantity + ' suat'}">
+                                Combo meta
+                            </p>
+                            <a class="btn-book" th:href="@{/orders/snacks}">Mua combo</a>
+                        </div>
+                    </article>
+                </div>
+                <div class="empty-state" th:if="${combos == null || #lists.isEmpty(combos)}">Hiện chưa có combo ưu đãi.</div>
+            </div>
+
+            <aside class="surface-panel panel-copy">
+                <span class="section-kicker">Cinema Note</span>
+                <h2 class="section-title">Trọn vẹn một tối ở rap</h2>
+                <p class="section-text">
+                    Từ việc lựa chọn phim, chọn ghế đến đặt snack và check-in bằng mã QR — toàn bộ trải nghiệm được thiết kế lại theo một quy trình mượt mà, trực quan, dễ nhìn và dễ thao tác hơn.
+                </p>
+
+                <div class="detail-list">
+                    <div class="detail-item">
+                        <strong>1. Chọn phim</strong>
+                        <span>Khám phá poster nổi bật, lịch chiếu rõ ràng và trailer sinh động giúp bạn dễ dàng đưa ra quyết định nhanh chóng.</span>
+                    </div>
+
+                    <div class="detail-item">
+                        <strong>2. Chọn ghế</strong>
+                        <span>Sơ đồ ghế trực quan, hiển thị rõ ghế còn trống, ghế đã đặt và thời gian giữ chỗ để bạn lựa chọn thuận tiện.</span>
+                    </div>
+
+                    <div class="detail-item">
+                        <strong>3. Hoàn tất</strong>
+                        <span>Vé, thông tin đặt chỗ và lịch sử giao dịch được sắp xếp khoa học, giúp bạn dễ dàng theo dõi và quản lý.</span>
+                    </div>
+                </div>
+            </aside>
+        </section>
+    </main>
 </div>
 
-<script>
-
-    document.addEventListener("DOMContentLoaded", function(){
-
-        document.querySelectorAll(".watch-trailer").forEach(btn => {
-
-            btn.addEventListener("click", function(){
-
-                let url = this.dataset.url;
-
-                url = convertYoutube(url);
-
-                openTrailer(url);
-
-            });
-
-        });
-
-    });
-
-    function convertYoutube(url){
-
-        // dạng watch?v=
-        if(url.includes("watch?v=")){
-            return url.replace("watch?v=","embed/");
-        }
-
-        // dạng youtube
-        if(url.includes("youtu.be/")){
-
-            let id = url.split("youtu.be/")[1];
-
-            if(id.includes("?"))
-                id = id.split("?")[0];
-
-            return "https://www.youtube.com/embed/" + id;
-        }
-
-        return url;
-
-    }
-
-    function openTrailer(url){
-
-        const modal = document.createElement("div");
-
-        modal.style.position="fixed";
-        modal.style.top="0";
-        modal.style.left="0";
-        modal.style.width="100%";
-        modal.style.height="100%";
-        modal.style.background="rgba(0,0,0,0.85)";
-        modal.style.display="flex";
-        modal.style.alignItems="center";
-        modal.style.justifyContent="center";
-        modal.style.zIndex="9999";
-
-        modal.innerHTML=`
-            <div style="width:900px;height:500px;background:black;border-radius:10px;overflow:hidden">
-                <iframe width="100%" height="100%"
-                    src="${url}"
-                    frameborder="0"
-                    allow="autoplay; encrypted-media"
-                    allowfullscreen>
-                </iframe>
-            </div>
-        `;
-
-        document.body.appendChild(modal);
-
-        modal.onclick = () => modal.remove();
-
-    }
-
-</script>
-
-</script>
-<style>
-    .movies{
-    display:grid;
-    grid-template-columns:repeat(4,1fr);
-    gap:30px;
-    padding:40px;
-    }
-
-    .movie-card{
-    position:relative;
-    overflow:hidden;
-    border-radius:12px;
-    }
-
-    .movie-card img{
-    width:100%;
-    height:350px;
-    object-fit:cover;
-    }
-
-    .overlay{
-    position:absolute;
-    top:0;
-    left:0;
-    width:100%;
-    height:100%;
-    background:rgba(0,0,0,0.6);
-    display:flex;
-    flex-direction:column;
-    justify-content:center;
-    align-items:center;
-    opacity:0;
-    transition:0.3s;
-    }
-
-    .movie-card:hover .overlay{
-    opacity:1;
-    }
-
-    .btn{
-    padding:10px 20px;
-    margin:10px;
-    border:none;
-    border-radius:6px;
-    cursor:pointer;
-    }
-
-    .buy{
-    background:#ff6b00;
-    color:white;
-    }
-
-    .trailer{
-    background:white;
-    }
-</style>
-
+<script src="/js/sidebar.js"></script>
 </body>
 </html>

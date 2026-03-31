@@ -1,0 +1,33 @@
+﻿<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Admin - Add Category</title>
+    <link rel="stylesheet" href="/css/style.css">
+    <style>
+        body { background-color: #121212; color: white; font-family: sans-serif; }
+        .container { max-width: 500px; margin: 100px auto; padding: 30px; background: #1a1a1a; border-radius: 12px; border: 1px solid #333; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
+        h2 { color: #17a2b8; border-left: 5px solid #17a2b8; padding-left: 15px; margin-bottom: 25px; }
+        .form-group { margin-bottom: 20px; }
+        label { display: block; margin-bottom: 8px; color: #bbb; font-weight: bold; }
+        input { width: 100%; padding: 12px; background: #222; border: 1px solid #444; color: white; border-radius: 6px; box-sizing: border-box; }
+        input:focus { border-color: #17a2b8; outline: none; }
+        .btn-save { background: #17a2b8; color: white; border: none; padding: 12px 25px; border-radius: 6px; cursor: pointer; font-weight: bold; width: 100%; margin-top: 10px; }
+        .btn-back { display: block; text-align: center; margin-top: 15px; color: #777; text-decoration: none; }
+    </style>
+    <link rel="stylesheet" href="/css/app-theme.css">
+</head>
+<body>
+<a href="/admin/dashboard" style="position:fixed;top:20px;right:20px;padding:10px 14px;background:#374151;color:#fff;text-decoration:none;border-radius:10px;z-index:9999;">Dashboard</a>
+<div class="container">
+    <h2>Add New Category</h2>
+    <form th:action="@{/admin/foods/categories/save}" th:object="${category}" method="post">
+        <div class="form-group">
+            <label>Category Name:</label>
+            <input type="text" th:field="*{name}" required placeholder="VĂ­ dá»¥: Combo Báº¯p NÆ°á»›c, NÆ°á»›c Ngá»t...">
+        </div>
+        <button type="submit" class="btn-save">XĂ¡c nháº­n LÆ°u</button>
+        <a href="/admin/foods" class="btn-back">Há»§y bá»</a>
+    </form>
+</div>
+</body>
+</html>
