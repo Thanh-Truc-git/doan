@@ -14,5 +14,4 @@ public interface ShowtimeRepository extends JpaRepository<Showtime, Long> {
 
     List<Showtime> findByRoom(Room room);
 
-    List<Showtime> findByMovieId(Long movieId);
 }

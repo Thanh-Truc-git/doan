@@ -1,0 +1,56 @@
+﻿<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Tickets</title>
+    <link rel="stylesheet" href="/css/app-theme.css">
+</head>
+<body class="admin-page">
+<div class="admin-shell section-stack">
+    <section class="surface-panel" data-reveal style="padding:28px;">
+        <div class="page-header">
+            <div>
+                <span class="eyebrow">Ticket control</span>
+                <h1 class="section-title">Quan ly ve va lich su dat ve</h1>
+                <p class="section-text">Trang nay hien toan bo ve da tao, gom ma booking, thoi gian dat, suat chieu va trang thai check-in de theo doi lich su tong the.</p>
+            </div>
+            <div class="toolbar-actions">
+                <a class="btn" href="/admin/tickets/check-in">Check-in QR</a>
+                <a class="btn ghost" href="/admin/dashboard">Dashboard</a>
+            </div>
+        </div>
+        <div class="metric-grid" style="margin-bottom:22px;">
+            <article class="metric-card"><h3>Tong so ve</h3><div class="metric-value" th:text="${tickets != null ? tickets.size() : 0}">0</div></article>
+            <article class="metric-card"><h3>Ve da dat</h3><div class="metric-value" th:text="${bookedTicketCount}">0</div></article>
+            <article class="metric-card"><h3>Ve da check-in</h3><div class="metric-value" th:text="${checkedInTicketCount}">0</div></article>
+            <article class="metric-card"><h3>Booking da tao</h3><div class="metric-value" th:text="${bookingCount}">0</div></article>
+        </div>
+        <div th:if="${tickets == null || #lists.isEmpty(tickets)}" class="empty-state">Chua co ve nao trong he thong.</div>
+        <div class="table-wrap" th:if="${tickets != null && !#lists.isEmpty(tickets)}">
+            <table>
+                <thead><tr><th>ID</th><th>Booking</th><th>Ma ve</th><th>Nguoi dung</th><th>Phim</th><th>Phong</th><th>Ghe</th><th>Suat chieu</th><th>Thoi gian dat</th><th>Trang thai</th><th>Check-in</th></tr></thead>
+                <tbody>
+                <tr th:each="ticket : ${tickets}">
+                    <td th:text="${ticket.id}">1</td>
+                    <td th:text="${ticket.booking != null ? '#' + ticket.booking.id : 'Chua gan'}">#1</td>
+                    <td th:text="${ticket.ticketCode != null ? ticket.ticketCode : 'N/A'}">N/A</td>
+                    <td th:text="${ticket.user != null ? ticket.user.username : 'N/A'}">N/A</td>
+                    <td th:text="${ticket.showtime != null && ticket.showtime.movie != null ? ticket.showtime.movie.title : 'Chua co phim'}">movie</td>
+                    <td th:text="${ticket.showtime != null && ticket.showtime.room != null ? ticket.showtime.room.name : 'N/A'}">room</td>
+                    <td th:text="${ticket.seatNumber != null ? ticket.seatNumber : 'N/A'}">A1</td>
+                    <td th:text="${ticket.showtime != null && ticket.showtime.startTime != null ? #temporals.format(ticket.showtime.startTime, 'dd/MM/yyyy HH:mm') : 'Chua co suat chieu'}">N/A</td>
+                    <td th:text="${ticket.booking != null && ticket.booking.bookingTime != null ? #temporals.format(ticket.booking.bookingTime, 'dd/MM/yyyy HH:mm') : 'N/A'}">N/A</td>
+                    <td><span class="status-chip" th:text="${ticket.status != null ? ticket.status : 'PENDING'}">BOOKED</span></td>
+                    <td>
+                        <a class="btn ghost" th:if="${ticket.status == null || !ticket.status.equalsIgnoreCase('CHECKED_IN')}" th:href="@{/admin/tickets/check-in(ticketCode=${ticket.ticketCode})}">Check-in</a>
+                        <span th:if="${ticket.status != null && ticket.status.equalsIgnoreCase('CHECKED_IN')}">Da check-in</span>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </section>
+</div>
+</body>
+</html>

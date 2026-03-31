@@ -1,25 +1,99 @@
-<!DOCTYPE html>
-<html>
-
+﻿<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
 <head>
-
-    <title>Admin</title>
-
-    <link rel="stylesheet" href="/css/style.css">
-
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bảng điều khiển quản trị</title>
+    <link rel="stylesheet" href="/css/app-theme.css">
 </head>
+<body class="admin-page">
+<div class="admin-shell section-stack">
+    <section class="hero-stage" data-reveal>
+        <div class="hero-copy">
+            <span class="eyebrow">Không gian quản trị</span>
+            <h1 class="section-title">Tổng quan vận hành rạp chiếu phim</h1>
+            <p class="section-text">
+                Bảng điều khiển tổng hợp số liệu, điều hướng nhanh và các khu vực chính giúp quản trị viên theo dõi phim, suất chiếu, vé, đồ ăn và khuyến mãi trong một hệ thống trực quan, đồng bộ.
+            </p>
+            <div class="inline-actions">
+                <a class="btn" href="/movies">Về trang người dùng</a>
+                <a class="btn ghost" href="/admin/tickets/check-in">Check-in QR</a>
+            </div>
+        </div>
 
-<body>
+        <div class="surface-panel" style="padding:24px;">
+            <div class="metric-grid">
+                <article class="metric-card"><h3>Phim</h3><div class="metric-value" th:text="${movieCount}">0</div></article>
+                <article class="metric-card"><h3>Đồ ăn</h3><div class="metric-value" th:text="${foodCount}">0</div></article>
+                <article class="metric-card"><h3>Vé</h3><div class="metric-value" th:text="${ticketCount}">0</div></article>
+                <article class="metric-card"><h3>Đặt chỗ</h3><div class="metric-value" th:text="${bookingCount}">0</div></article>
+            </div>
+        </div>
+    </section>
 
-<h1>Admin Dashboard</h1>
+    <section class="surface-panel" data-reveal style="padding:28px;">
+        <div class="metric-grid">
+            <article class="metric-card"><h3>Người dùng</h3><div class="metric-value" th:text="${userCount}">0</div></article>
+            <article class="metric-card"><h3>Combo</h3><div class="metric-value" th:text="${comboCount}">0</div></article>
+            <article class="metric-card"><h3>Khuyến mãi</h3><div class="metric-value" th:text="${promotionCount}">0</div></article>
+            <article class="metric-card"><h3>Đơn hàng</h3><div class="metric-value" th:text="${orderCount}">0</div></article>
+            <article class="metric-card"><h3>Thanh toán</h3><div class="metric-value" th:text="${paymentCount}">0</div></article>
+        </div>
+    </section>
 
-<a href="/admin/movies">Movies</a>
+    <section class="admin-grid" data-reveal>
+        <article class="admin-panel" style="padding:24px;">
+            <span class="section-kicker">Lập lịch</span>
+            <h3 style="margin-top:12px;">Phim và lịch chiếu</h3>
+            <p class="panel-note" style="margin:10px 0 16px;">
+                Quản lý phim, phòng chiếu và suất chiếu trong một khu vực điều hướng rõ ràng và thuận tiện.
+            </p>
+            <div class="stack-actions">
+                <a class="btn" href="/admin/movies">Danh sách phim</a>
+                <a class="btn ghost" href="/admin/showtimes">Danh sách suất chiếu</a>
+                <a class="btn ghost" href="/admin/rooms">Danh sách phòng</a>
+            </div>
+        </article>
 
-<a href="/admin/showtimes">Showtimes</a>
+        <article class="admin-panel" style="padding:24px;">
+            <span class="section-kicker">Quầy đồ ăn</span>
+            <h3 style="margin-top:12px;">Đồ ăn, danh mục và combo</h3>
+            <p class="panel-note" style="margin:10px 0 16px;">
+                Toàn bộ khu vực đồ ăn được gom lại giúp quản trị viên dễ dàng quản lý và xây dựng menu.
+            </p>
+            <div class="stack-actions">
+                <a class="btn" href="/admin/foods">Quản lý đồ ăn</a>
+                <a class="btn ghost" href="/admin/foods/categories/create">Thêm danh mục</a>
+                <a class="btn ghost" href="/admin/combos">Quản lý combo</a>
+            </div>
+        </article>
 
-<a href="/admin/rooms">Rooms</a>
+        <article class="admin-panel" style="padding:24px;">
+            <span class="section-kicker">Thương mại</span>
+            <h3 style="margin-top:12px;">Đơn hàng, vé và thanh toán</h3>
+            <p class="panel-note" style="margin:10px 0 16px;">
+                Theo dõi doanh thu, lịch sử vé và đặt chỗ trong một không gian làm việc thống nhất.
+            </p>
+            <div class="stack-actions">
+                <a class="btn" href="/admin/orders">Đơn hàng</a>
+                <a class="btn ghost" href="/admin/tickets">Quản lý vé</a>
+                <a class="btn ghost" href="/admin/payments">Thanh toán</a>
+            </div>
+        </article>
 
-<a href="/admin/users">Users</a>
-
+        <article class="admin-panel" style="padding:24px;">
+            <span class="section-kicker">Chăm sóc khách hàng</span>
+            <h3 style="margin-top:12px;">Người dùng và khuyến mãi</h3>
+            <p class="panel-note" style="margin:10px 0 16px;">
+                Quản lý người dùng, chương trình khuyến mãi và hỗ trợ đặt vé trong một hệ thống tập trung.
+            </p>
+            <div class="stack-actions">
+                <a class="btn" href="/admin/users">Người dùng</a>
+                <a class="btn ghost" href="/admin/promotions">Khuyến mãi</a>
+                <a class="btn ghost" href="/admin/bookings">Đặt chỗ</a>
+            </div>
+        </article>
+    </section>
+</div>
 </body>
 </html>

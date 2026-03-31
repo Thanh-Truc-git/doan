@@ -1,0 +1,39 @@
+﻿<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Bookings</title>
+    <link rel="stylesheet" href="/css/app-theme.css">
+</head>
+<body class="admin-page">
+<div class="admin-shell section-stack">
+    <section class="surface-panel" data-reveal style="padding:28px;">
+        <div class="page-header">
+            <div>
+                <span class="eyebrow">Booking log</span>
+                <h1 class="section-title">Danh sach booking</h1>
+                <p class="section-text">Bang booking tong hop giup doi van hanh doi chieu nguoi dung, phim, phong va thoi diem dat ve nhanh hon.</p>
+            </div>
+            <a class="btn ghost" href="/admin/dashboard">Dashboard</a>
+        </div>
+        <div class="empty-state" th:if="${#lists.isEmpty(bookings)}">Chua co booking nao.</div>
+        <div class="table-wrap" th:if="${!#lists.isEmpty(bookings)}">
+            <table>
+                <thead><tr><th>ID</th><th>Nguoi dung</th><th>Phim</th><th>Phong</th><th>Thoi gian booking</th><th>Suat chieu</th></tr></thead>
+                <tbody>
+                <tr th:each="booking : ${bookings}">
+                    <td th:text="${booking.id}">1</td>
+                    <td th:text="${booking.user != null ? booking.user.username : 'N/A'}">N/A</td>
+                    <td th:text="${booking.showtime != null && booking.showtime.movie != null ? booking.showtime.movie.title : 'N/A'}">N/A</td>
+                    <td th:text="${booking.showtime != null && booking.showtime.room != null ? booking.showtime.room.name : 'N/A'}">N/A</td>
+                    <td th:text="${booking.bookingTime != null ? #temporals.format(booking.bookingTime, 'dd/MM/yyyy HH:mm') : 'N/A'}">N/A</td>
+                    <td th:text="${booking.showtime != null && booking.showtime.startTime != null ? #temporals.format(booking.showtime.startTime, 'dd/MM/yyyy HH:mm') : 'N/A'}">N/A</td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </section>
+</div>
+</body>
+</html>

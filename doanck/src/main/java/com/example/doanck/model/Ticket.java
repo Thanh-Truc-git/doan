@@ -12,88 +12,85 @@ public class Ticket {
     private String seatNumber;
 
     @Lob
-    @Column(columnDefinition = "TEXT")
+    @Column(columnDefinition = "LONGTEXT")
     private String qrCode;
 
+    // 🔥 THÊM
+    private String status;
+
+    private String ticketCode;
+
+    private double price;
+
+    private java.time.LocalDateTime cancelledAt;
+
+    private String refundVoucherCode;
+
+    // ======================
+    // RELATION
+    // ======================
+
     @ManyToOne
+    @JoinColumn(name = "user_id") // 🔥 QUAN TRỌNG
     private User user;
 
     @ManyToOne
+    @JoinColumn(name = "showtime_id")
     private Showtime showtime;
 
     @ManyToOne
+    @JoinColumn(name = "booking_id")
     private Booking booking;
-    private boolean used = false;
-    private String bookingCode;
-    private boolean checkedIn = false;
+
     public Ticket(){}
 
-    public Long getId() {
-        return id;
-    }
+    // ======================
+    // GETTER
+    // ======================
+    public Long getId() { return id; }
 
-    public String getSeatNumber() {
-        return seatNumber;
-    }
+    public String getSeatNumber() { return seatNumber; }
 
-    public String getQrCode() {
-        return qrCode;
-    }
+    public String getQrCode() { return qrCode; }
 
-    public User getUser() {
-        return user;
-    }
+    public String getStatus() { return status; }
 
-    public Showtime getShowtime() {
-        return showtime;
-    }
+    public String getTicketCode() { return ticketCode; }
 
-    public Booking getBooking() {
-        return booking;
-    }
+    public double getPrice() { return price; }
 
-    public void setId(Long id) {
-        this.id = id;
-    }
+    public java.time.LocalDateTime getCancelledAt() { return cancelledAt; }
 
-    public void setSeatNumber(String seatNumber) {
-        this.seatNumber = seatNumber;
-    }
+    public String getRefundVoucherCode() { return refundVoucherCode; }
 
-    public void setQrCode(String qrCode) {
-        this.qrCode = qrCode;
-    }
+    public User getUser() { return user; }
 
-    public void setUser(User user) {
-        this.user = user;
-    }
+    public Showtime getShowtime() { return showtime; }
 
-    public void setShowtime(Showtime showtime) {
-        this.showtime = showtime;
-    }
+    public Booking getBooking() { return booking; }
 
-    public void setBooking(Booking booking) {
-        this.booking = booking;
-    }
-    public boolean isUsed() {
-        return used;
-    }
+    // ======================
+    // SETTER
+    // ======================
+    public void setId(Long id) { this.id = id; }
 
-    public void setUsed(boolean used) {
-        this.used = used;
-    }
-    public String getBookingCode() {
-        return bookingCode;
-    }
+    public void setSeatNumber(String seatNumber) { this.seatNumber = seatNumber; }
 
-    public void setBookingCode(String bookingCode) {
-        this.bookingCode = bookingCode;
-    }
-    public boolean isCheckedIn() {
-        return checkedIn;
-    }
+    public void setQrCode(String qrCode) { this.qrCode = qrCode; }
 
-    public void setCheckedIn(boolean checkedIn) {
-        this.checkedIn = checkedIn;
-    }
+    public void setStatus(String status) { this.status = status; }
+
+    public void setTicketCode(String ticketCode) { this.ticketCode = ticketCode; }
+
+    public void setPrice(double price) { this.price = price; }
+
+    public void setCancelledAt(java.time.LocalDateTime cancelledAt) { this.cancelledAt = cancelledAt; }
+
+    public void setRefundVoucherCode(String refundVoucherCode) { this.refundVoucherCode = refundVoucherCode; }
+
+    public void setUser(User user) { this.user = user; }
+
+    public void setShowtime(Showtime showtime) { this.showtime = showtime; }
+
+    public void setBooking(Booking booking) { this.booking = booking; }
 }
