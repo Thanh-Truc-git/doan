@@ -4,7 +4,7 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
-public class DoanckApplication {
+public class 	DoanckApplication {
 
 	public static void main(String[] args) {
 		SpringApplication.run(DoanckApplication.class, args);

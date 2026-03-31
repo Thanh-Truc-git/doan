@@ -1,0 +1,49 @@
+﻿<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <script>
+    (function () {
+        const theme = localStorage.getItem('bhtnex_theme') === 'light' ? 'light' : 'dark';
+        document.documentElement.setAttribute('data-theme', theme);
+    })();
+  </script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Phim dang chieu</title>
+  <link rel="stylesheet" href="/css/app-theme.css">
+</head>
+<body>
+<div class="cinema-shell section-stack">
+  <section class="hero-stage" data-reveal>
+    <div class="hero-copy">
+      <span class="eyebrow">Now showing</span>
+      <h1 class="section-title">Tat ca phim dang chieu</h1>
+      <p class="section-text">Kho poster duoc sap lai theo phong cach cinema editorial de ban quet nhanh, chon nhanh va di thang vao seat map.</p>
+      <div class="inline-actions">
+        <a class="btn" th:href="@{/movies}">Ve trang chu</a>
+        <a class="btn ghost" th:href="@{/cinemas}">Xem he thong rap</a>
+      </div>
+    </div>
+    <div class="surface-panel" style="padding:24px;">
+      <div class="metric-grid">
+        <article class="metric-card"><h3>Tong phim</h3><div class="metric-value" th:text="${movies != null ? movies.size() : 0}">0</div></article>
+        <article class="metric-card"><h3>Trang thai</h3><div class="metric-value">Live</div></article>
+      </div>
+    </div>
+  </section>
+
+  <section class="surface-panel" data-reveal style="padding:28px;">
+    <div class="movie-grid">
+      <article th:each="movie : ${movies}" class="movie-card-lite">
+        <div class="poster-thumb" style="aspect-ratio:3/4; margin-bottom:14px;">
+          <img th:src="${movie.poster != null && !#strings.isEmpty(movie.poster) ? '/uploads/' + movie.poster : '/assets/img/hero.jpg'}" th:alt="${movie.title}">
+        </div>
+        <h3 th:text="${movie.title}">Movie</h3>
+        <p class="muted" style="margin:8px 0 14px;" th:text="${(movie.duration != null ? movie.duration + ' phut • ' : '') + (movie.genre != null ? movie.genre : 'Dang cap nhat')}">Meta</p>
+        <a class="btn" th:href="${movie.id != null ? '/seat-map/' + movie.id : '/movies'}">Dat ve</a>
+      </article>
+    </div>
+  </section>
+</div>
+</body>
+</html>

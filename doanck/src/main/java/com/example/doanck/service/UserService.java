@@ -18,78 +18,61 @@ public class UserService {
     @Autowired
     private PasswordEncoder passwordEncoder;
 
-    // =====================
-    // REGISTER USER
-    // =====================
     public User register(User user){
-
         user.setPassword(passwordEncoder.encode(user.getPassword()));
-        user.setRole("ROLE_USER");
-
+        user.setRole("USER");
         return userRepository.save(user);
     }
 
-    // =====================
-    // ADMIN ADD USER
-    // =====================
     public User addUser(User user){
-
         user.setPassword(passwordEncoder.encode(user.getPassword()));
-
-        if(user.getRole() == null){
-            user.setRole("ROLE_USER");
-        }
-
         return userRepository.save(user);
     }
 
-    // =====================
-    // GET ALL USERS
-    // =====================
-    public List<User> getAllUsers(){
-        return userRepository.findAll();
-    }
-
-    // =====================
-    // FIND BY USERNAME
-    // =====================
-    public User findByUsername(String username){
-        return userRepository.findByUsername(username);
-    }
-
-    // =====================
-    // GET USER BY ID
-    // =====================
-    public User getUserById(Long id){
-        return userRepository.findById(id).orElse(null);
-    }
-
-    // =====================
-    // UPDATE USER
-    // =====================
-    public void updateUser(Long id, User newUser){
-
+    public User updateUser(Long id, User newUser){
         User user = userRepository.findById(id).orElse(null);
 
         if(user != null){
-
             user.setUsername(newUser.getUsername());
+            user.setEmail(newUser.getEmail());
+            user.setRole(newUser.getRole());
 
             if(newUser.getPassword() != null && !newUser.getPassword().isEmpty()){
                 user.setPassword(passwordEncoder.encode(newUser.getPassword()));
             }
 
-            user.setRole(newUser.getRole());
-
-            userRepository.save(user);
+            return userRepository.save(user);
         }
+
+        return null;
     }
 
-    // =====================
-    // DELETE USER
-    // =====================
+    public List<User> getAllUsers(){
+        return userRepository.findAll();
+    }
+
+    public User findByUsername(String username){
+        return userRepository.findByUsername(username);
+    }
+
+    public boolean changePassword(String username, String currentPassword, String newPassword){
+        User user = userRepository.findByUsername(username);
+        if(user == null){
+            return false;
+        }
+        if(!passwordEncoder.matches(currentPassword, user.getPassword())){
+            return false;
+        }
+        user.setPassword(passwordEncoder.encode(newPassword));
+        userRepository.save(user);
+        return true;
+    }
+
+    public User getUserById(Long id){
+        return userRepository.findById(id).orElse(null);
+    }
+
     public void deleteUser(Long id){
         userRepository.deleteById(id);
     }
-
 }

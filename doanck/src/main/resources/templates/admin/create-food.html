@@ -1,0 +1,94 @@
+﻿<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>ThĂªm/Sá»­a MĂ³n Ä‚n</title>
+    <link rel="stylesheet" href="/css/style.css">
+    <style>
+        .container { max-width: 500px; margin: 50px auto; padding: 30px; border: 1px solid #ddd; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+        .form-group { margin-bottom: 20px; }
+        label { display: block; margin-bottom: 8px; font-weight: bold; color: #333; }
+        input, select { width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 6px; box-sizing: border-box; }
+        .btn-save { background: #28a745; color: white; border: none; padding: 12px 25px; cursor: pointer; border-radius: 6px; font-weight: bold; }
+        /* Khu vá»±c hiá»ƒn thá»‹ áº£nh xem trÆ°á»›c */
+        #imagePreview { margin-top: 10px; width: 150px; height: 150px; border: 2px dashed #ddd; display: flex; align-items: center; justify-content: center; overflow: hidden; border-radius: 8px; }
+        #imagePreview img { width: 100%; height: 100%; object-fit: cover; }
+    </style>
+    <link rel="stylesheet" href="/css/app-theme.css">
+</head>
+<body>
+<a href="/admin/dashboard" style="position:fixed;top:20px;right:20px;padding:10px 14px;background:#374151;color:#fff;text-decoration:none;border-radius:10px;z-index:9999;">Dashboard</a>
+
+<div class="container">
+    <h2 th:text="${food.id == null ? 'ThĂªm mĂ³n Äƒn má»›i' : 'Chá»‰nh sá»­a mĂ³n Äƒn'}"></h2>
+
+    <form th:action="@{/admin/foods/save}" th:object="${food}" method="post" enctype="multipart/form-data">
+        <input type="hidden" th:field="*{id}">
+
+        <div class="form-group">
+            <label>TĂªn mĂ³n Äƒn:</label>
+            <input type="text" th:field="*{name}" required placeholder="Nháº­p tĂªn mĂ³n Äƒn...">
+        </div>
+
+        <div class="form-group">
+            <label>GiĂ¡ tiá»n (VNÄ):</label>
+            <input type="number" th:field="*{price}" required>
+        </div>
+
+        <div class="form-group">
+            <label>Chá»n hĂ¬nh áº£nh (Æ¯u tiĂªn .png):</label>
+            <input type="file" name="imageFile" id="fileInput" accept="image/png, image/jpeg" onchange="previewImage(this)">
+
+            <div id="imagePreview">
+                <img th:if="${food.image != null}" th:src="@{'/uploads/' + ${food.image}}" id="preview" />
+                <span th:if="${food.image == null}" id="text">ChÆ°a chá»n áº£nh</span>
+            </div>
+
+            <input type="hidden" th:field="*{image}">
+        </div>
+
+        <div class="form-group">
+            <label>Danh má»¥c:</label>
+            <select name="categoryId" required>
+                <option value="">-- Chá»n danh má»¥c --</option>
+                <option th:each="cat : ${categories}"
+                        th:value="${cat.id}"
+                        th:text="${cat.name}"
+                        th:selected="${food.category != null && food.category.id == cat.id}">
+                </option>
+            </select>
+        </div>
+
+        <div style="margin-top: 30px;">
+            <button type="submit" class="btn-save">XĂ¡c nháº­n LÆ°u</button>
+            <a href="/admin/foods" style="margin-left: 15px; color: #777; text-decoration: none;">Quay láº¡i</a>
+        </div>
+    </form>
+</div>
+
+<script>
+    // HĂ m xá»­ lĂ½ hiá»ƒn thá»‹ áº£nh tá»©c thá»i khi chá»n file
+    function previewImage(input) {
+        const preview = document.getElementById('preview');
+        const text = document.getElementById('text');
+        const file = input.files[0];
+
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                if(preview) {
+                    preview.src = e.target.result;
+                } else {
+                    const newImg = document.createElement('img');
+                    newImg.id = 'preview';
+                    newImg.src = e.target.result;
+                    document.getElementById('imagePreview').innerHTML = '';
+                    document.getElementById('imagePreview').appendChild(newImg);
+                }
+            }
+            reader.readAsDataURL(file);
+        }
+    }
+</script>
+
+</body>
+</html>

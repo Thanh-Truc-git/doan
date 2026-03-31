@@ -1,4 +1,8 @@
-let selectedSeats = []
+let selectedSeats=[]
+
+// lấy showtime từ URL
+const urlParams = new URLSearchParams(window.location.search)
+let showtimeId = urlParams.get("showtime")
 
 function createSeats(){
 
@@ -18,9 +22,8 @@ let seat=r+i
 let btn=document.createElement("div")
 
 btn.innerText=seat
-btn.dataset.seat = seat
 
-btn.className="seat"
+btn.className="seat available"
 
 btn.onclick=function(){
 
@@ -38,8 +41,6 @@ selectedSeats.push(seat)
 
 }
 
-updateTotal()
-
 }
 
 row.appendChild(btn)
@@ -52,54 +53,19 @@ map.appendChild(row)
 
 }
 
-// =========================
-// SET BOOKED SEATS
-// =========================
+createSeats()
 
-function setBookedSeats(bookedSeats){
+function bookSeats() {
 
-bookedSeats.forEach(ticket => {
+    let selectedSeats = [];
 
-let seat = document.querySelector(`[data-seat='${ticket.seatNumber}']`)
+    document.querySelectorAll(".seat.selected").forEach(seat => {
+        selectedSeats.push(seat.dataset.seat);
+    });
 
-if(seat){
-seat.classList.add("booked")
-}
+    let showtimeId = document.getElementById("showtimeId").value;
 
-})
-
-}
-
-// =========================
-// UPDATE TOTAL PRICE
-// =========================
-
-function updateTotal(){
-
-let total = selectedSeats.length * price
-
-document.getElementById("total").innerText = total
-
-}
-
-// =========================
-// PAYMENT
-// =========================
-
-function bookSeats(){
-
-if(selectedSeats.length===0){
-
-alert("Please select seats")
-
-return
-
-}
-
-let showtimeId=document.getElementById("showtimeId").value
-
-window.location.href =
-"/payment/create?seats="+selectedSeats.join(",")+
-"&showtime="+showtimeId
-
+    window.location.href =
+        "/payment/create?seats=" + selectedSeats.join(",") +
+        "&showtime=" + showtimeId;
 }

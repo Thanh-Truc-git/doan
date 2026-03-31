@@ -1,10 +1,38 @@
-<!DOCTYPE html>
-<html lang="en">
+﻿<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>Title</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Rooms</title>
+    <link rel="stylesheet" href="/css/app-theme.css">
 </head>
-<body>
-
+<body class="admin-page">
+<div class="admin-shell section-stack">
+    <section class="surface-panel" data-reveal style="padding:28px;">
+        <div class="page-header">
+            <div>
+                <span class="eyebrow">Venue setup</span>
+                <h1 class="section-title">Danh sach phong chieu</h1>
+                <p class="section-text">Phong chieu da duoc dua ve dang catalog, de admin doc nhanh ten phong, tong ghe va tac vu lien quan.</p>
+            </div>
+            <div class="toolbar-actions">
+                <a class="btn" href="/admin/rooms/create">Them phong</a>
+                <a class="btn ghost" href="/admin/dashboard">Dashboard</a>
+            </div>
+        </div>
+        <div class="empty-state" th:if="${#lists.isEmpty(rooms)}">Chua co phong chieu nao.</div>
+        <div class="room-grid" th:if="${!#lists.isEmpty(rooms)}">
+            <article class="room-card" th:each="room : ${rooms}">
+                <h3 th:text="${room.name}">Room</h3>
+                <p class="muted" style="margin:8px 0 14px;">So ghe: <span th:text="${room.totalSeats}">0</span></p>
+                <div class="inline-actions">
+                    <a class="btn ghost" th:href="@{/admin/showtimes}">Suat chieu</a>
+                    <a class="btn" th:href="@{/admin/rooms/edit/{id}(id=${room.id})}">Sua</a>
+                    <a class="btn danger" th:href="@{/admin/rooms/delete/{id}(id=${room.id})}" onclick="return confirm('Ban chac chan muon xoa phong nay?')">Xoa</a>
+                </div>
+            </article>
+        </div>
+    </section>
+</div>
 </body>
 </html>

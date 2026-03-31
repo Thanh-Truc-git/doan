@@ -1,0 +1,77 @@
+﻿<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <script>
+        (function () {
+            const theme = localStorage.getItem('bhtnex_theme') === 'light' ? 'light' : 'dark';
+            document.documentElement.setAttribute('data-theme', theme);
+        })();
+    </script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Thông báo</title>
+    <link rel="stylesheet" href="/css/app-theme.css">
+</head>
+<body>
+<div class="account-shell section-stack">
+    <section class="surface-panel" data-reveal style="padding:28px;">
+        <div class="page-header">
+            <div>
+                <span class="eyebrow">Hộp thư</span>
+                <h1 class="section-title">Thông báo</h1>
+                <p class="section-text">
+                    Ưu đãi, cập nhật và trạng thái đặt vé được hiển thị trong một dòng thời gian rõ ràng và hiện đại.
+                </p>
+            </div>
+            <div class="inline-actions">
+                <a class="btn"
+                   th:if="${isAdmin}"
+                   th:href="@{/admin/dashboard}">Dashboard admin</a>
+                <a class="btn ghost" th:href="@{/movies}">Quay lại danh sách phim</a>
+            </div>
+        </div>
+
+        <div class="section-stack">
+            <article class="notice-card" style="padding:20px;">
+                <div class="page-header" style="margin-bottom:12px;align-items:center;">
+                    <div>
+                        <h3>Đặt vé thành công</h3>
+                        <p class="panel-note">2 phút trước</p>
+                    </div>
+                    <span class="status-chip">Mới</span>
+                </div>
+                <p class="section-text">
+                    Vé phim của bạn đã được tạo và mã QR đã sẵn sàng trong mục “Vé của tôi”.
+                </p>
+            </article>
+
+            <article class="notice-card" style="padding:20px;">
+                <div class="page-header" style="margin-bottom:12px;align-items:center;">
+                    <div>
+                        <h3>Ưu đãi giờ vàng</h3>
+                        <p class="panel-note">Hôm nay</p>
+                    </div>
+                    <span class="status-chip">Khuyến mãi</span>
+                </div>
+                <p class="section-text">
+                    Giảm 20% khi đặt vé trong khung giờ từ 10h đến 14h vào thứ Tư hàng tuần.
+                </p>
+            </article>
+
+            <article class="notice-card" style="padding:20px;">
+                <div class="page-header" style="margin-bottom:12px;align-items:center;">
+                    <div>
+                        <h3>Cập nhật tài khoản</h3>
+                        <p class="panel-note">Hôm qua</p>
+                    </div>
+                    <span class="status-chip">Hệ thống</span>
+                </div>
+                <p class="section-text">
+                    Thông tin cá nhân và giao diện tài khoản đã được làm mới để đồng bộ hơn với toàn bộ website.
+                </p>
+            </article>
+        </div>
+    </section>
+</div>
+</body>
+</html>

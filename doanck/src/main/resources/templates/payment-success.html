@@ -1,16 +1,34 @@
-<!DOCTYPE html>
-<html>
+﻿<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
 <head>
-    <title>Payment Success</title>
+    <script>
+        (function () {
+            const theme = localStorage.getItem('bhtnex_theme') === 'light' ? 'light' : 'dark';
+            document.documentElement.setAttribute('data-theme', theme);
+        })();
+    </script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Thanh toan thanh cong</title>
+    <link rel="stylesheet" href="/css/app-theme.css">
 </head>
-
-<body>
-
-<h2>Thanh toán thành công</h2>
-
-<p>Vé của bạn đã được đặt thành công.</p>
-
-<a href="/movies">Quay lại trang phim</a>
-
+<body class="auth-page">
+<div class="auth-shell">
+    <div class="auth-card" data-reveal>
+        <div class="auth-brand">
+            <span class="eyebrow">Payment success</span>
+            <h1 class="auth-title">Thanh toan hoan tat</h1>
+            <p class="auth-subtitle">Giao dich da thanh cong va ve da duoc luu vao he thong. Toan bo flow thanh toan da duoc dong bo lai voi giao dien cinema hien dai hon.</p>
+        </div>
+        <div class="metric-grid" style="margin-bottom:18px;">
+            <article class="metric-card"><h3>Trang thai</h3><div class="metric-value">OK</div></article>
+            <article class="metric-card"><h3>Kenh thanh toan</h3><div class="metric-value">VNPay</div></article>
+        </div>
+        <div class="stack-actions">
+            <a class="btn" th:href="@{/tickets}">Xem ve cua toi</a>
+            <a class="btn ghost" th:href="@{/movies}">Tiep tuc dat ve</a>
+        </div>
+    </div>
+</div>
 </body>
 </html>

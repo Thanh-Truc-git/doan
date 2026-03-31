@@ -1,96 +1,209 @@
-<!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
-
+﻿<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
 <head>
-
-    <title>Choose Seat</title>
-
+    <script>
+        (function () {
+            const theme = localStorage.getItem('bhtnex_theme') === 'light' ? 'light' : 'dark';
+            document.documentElement.setAttribute('data-theme', theme);
+        })();
+    </script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>So do ghe</title>
+    <link rel="stylesheet" href="/css/app-theme.css">
     <style>
-
-        body{
-        font-family:Arial;
-        text-align:center;
-        }
-
-        .row{
-        display:flex;
-        justify-content:center;
-        margin:5px;
-        }
-
-        .seat{
-
-        width:40px;
-        height:40px;
-
-        margin:4px;
-
-        display:flex;
-        align-items:center;
-        justify-content:center;
-
-        border-radius:6px;
-
-        background:#ccc;
-        cursor:pointer;
-        }
-
-        .selected{
-        background:#4CAF50;
-        color:white;
-        }
-
-        .booked{
-        background:#ff4d4d;
-        color:white;
-        cursor:not-allowed;
-        }
-
-        .screen{
-        margin:20px auto;
-        width:400px;
-        height:20px;
-        background:#444;
-        color:white;
-        line-height:20px;
-        }
-
+        .seat-stage{display:grid;grid-template-columns:minmax(0,1.3fr) minmax(280px,.7fr);gap:20px}
+        .seat-shell{padding:28px;border-radius:24px;border:1px solid var(--border);background:var(--surface);box-shadow:var(--shadow-lg)}
+        .screen-line{margin:0 auto 24px;padding:14px 20px;text-align:center;border-radius:999px;background:linear-gradient(135deg,rgba(245,158,11,.18),rgba(56,189,248,.12));color:var(--accent-strong);font-weight:800;letter-spacing:.2em;text-transform:uppercase}
+        .seat-map{display:flex;flex-direction:column;gap:10px}
+        .seat-row{display:flex;gap:10px;justify-content:center;flex-wrap:wrap}
+        .seat{width:54px;height:40px;border-radius:12px;border:1px solid var(--border-strong);background:rgba(255,255,255,.04);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;transition:.18s ease}
+        .seat:hover:not(.booked){transform:translateY(-2px);border-color:rgba(245,158,11,.5)}
+        .seat.selected{background:linear-gradient(135deg,#f59e0b,#fbbf24);color:#111827;border-color:transparent}
+        .seat.booked{background:linear-gradient(135deg,#dc2626,#ef4444);color:#fff;cursor:not-allowed;border-color:transparent}
+        .legend{display:flex;gap:12px;flex-wrap:wrap;margin-top:18px}.legend-item{display:flex;align-items:center;gap:8px;color:var(--muted)}.legend-box{width:18px;height:18px;border-radius:6px}
+        .voucher-input{width:100%;margin-top:10px;padding:12px 14px;border-radius:14px;border:1px solid var(--border);background:rgba(255,255,255,.03);color:var(--text)}
+        .voucher-list{display:grid;gap:10px;margin-top:16px}
+        .voucher-card{padding:14px;border-radius:16px;border:1px solid var(--border);background:rgba(255,255,255,.03)}
+        .voucher-card strong{display:block;font-size:14px}
+        .voucher-card span{display:block;color:var(--muted);font-size:13px;margin-top:4px}
+        @media (max-width:980px){.seat-stage{grid-template-columns:1fr}}
     </style>
-
 </head>
-
 <body>
+<div class="cinema-shell section-stack">
+    <section class="seat-stage" data-reveal>
+        <div class="seat-shell">
+            <div class="page-header">
+                <div>
+                    <span class="eyebrow">Seat map</span>
+                    <h1 class="section-title">Chon ghe cho buoi chieu cua ban</h1>
+                    <p class="section-text" th:if="${movie != null}" th:text="${movie.title}">Movie</p>
+                </div>
+                <button class="btn" type="button" onclick="confirmSelection()">Tiep tuc thanh toan</button>
+            </div>
 
-<h2>Choose Seats</h2>
+            <div class="screen-line">Screen</div>
 
-<div class="screen">SCREEN</div>
+            <div class="seat-map" id="seat-map">
+                <div class="seat-row" th:each="seat, seatStat : ${seats}" th:if="${seats != null and seatStat.index % 8 == 0}">
+                    <th:block th:each="rowSeat : ${#lists.toList(seats).subList(seatStat.index, T(java.lang.Math).min(seatStat.index + 8, #lists.size(seats)))}">
+                        <div class="seat"
+                             th:attr="data-seat=${rowSeat.seatNumber}"
+                             th:text="${rowSeat.seatNumber}"
+                             th:classappend="${bookedSeats != null and #lists.contains(bookedSeats, rowSeat.seatNumber)} ? ' booked' : ''"></div>
+                    </th:block>
+                </div>
+            </div>
 
-<div id="seat-map"></div>
+            <div class="legend">
+                <div class="legend-item"><div class="legend-box" style="background:rgba(255,255,255,.08)"></div> Trong</div>
+                <div class="legend-item"><div class="legend-box" style="background:linear-gradient(135deg,#f59e0b,#fbbf24)"></div> Dang chon</div>
+                <div class="legend-item"><div class="legend-box" style="background:linear-gradient(135deg,#dc2626,#ef4444)"></div> Da dat</div>
+            </div>
+        </div>
 
-<h3>Total: <span id="total">0</span> VND</h3>
+        <aside class="seat-shell">
+            <span class="eyebrow">Booking summary</span>
+            <div class="kv-row" style="margin-top:14px;">
+                <div class="kv-item"><strong>Phim</strong><span th:text="${movie != null ? movie.title : 'Dang cap nhat'}">Movie</span></div>
+                <div class="kv-item"><strong>Suat chieu</strong><span th:text="${showtime != null && showtime.startTime != null ? #temporals.format(showtime.startTime, 'dd/MM/yyyy HH:mm') : 'Dang cap nhat'}">Showtime</span></div>
+                <div class="kv-item"><strong>Movie ID</strong><span th:text="${movieId}">0</span></div>
+            </div>
+            <div class="kv-row" style="margin-top:18px;">
+                <div class="kv-item"><strong>Gia ve / ghe</strong><span id="ticketPriceLabel">100000 VND</span></div>
+                <div class="kv-item"><strong>Ghe da chon</strong><span id="selectedSeatCount">0</span></div>
+                <div class="kv-item"><strong>Tam tinh</strong><span id="estimatedTotal">0 VND</span></div>
+            </div>
+            <div style="margin-top:18px;">
+                <label for="voucherCode" style="display:block;font-weight:700;">Voucher</label>
+                <input id="voucherCode"
+                       class="voucher-input"
+                       type="text"
+                       placeholder="Nhap ma voucher de tru tien">
+                <p class="section-text" style="margin-top:10px;">Voucher se duoc tru vao tong tien o buoc thanh toan. Ve huy hop le se duoc hoan ve voucher.</p>
+                <div th:if="${voucherError == 'invalid'}" style="margin-top:10px;padding:10px 12px;border-radius:12px;background:#7f1d1d;color:#fee2e2;">
+                    Voucher khong hop le, da het han, hoac khong thuoc tai khoan cua ban.
+                </div>
+            </div>
+            <div class="voucher-list" th:if="${availableVouchers != null && !#lists.isEmpty(availableVouchers)}">
+                <article class="voucher-card" th:each="voucher : ${availableVouchers}">
+                    <strong th:text="${voucher.code}">VCH-XXXX</strong>
+                    <span th:text="${'Con lai: ' + #numbers.formatDecimal(voucher.remainingAmount, 1, 0) + ' VND'}">Con lai</span>
+                    <span th:text="${voucher.expiresAt != null ? 'Het han: ' + #temporals.format(voucher.expiresAt, 'dd/MM/yyyy HH:mm') : 'Khong gioi han'}">Het han</span>
+                </article>
+            </div>
+            <p class="section-text" style="margin-top:18px;">Neu suat chieu da het han, he thong se tu dong chan va dua ban ve danh sach phim dang chieu.</p>
+        </aside>
+    </section>
 
-<input type="hidden" id="showtimeId" th:value="${showtime.id}">
-
-<button onclick="bookSeats()">
-    Thanh toán
-</button>
+    <form id="orderForm" th:action="@{/orders/create}" method="post" style="display:none;">
+        <input type="hidden" name="movieId" th:value="${movieId}">
+    </form>
+</div>
 
 <script th:inline="javascript">
+    const seatMap = document.getElementById('seat-map');
+    const showtimeId = /*[[${showtimeId}]]*/ null;
+    const movieId = /*[[${movieId}]]*/ null;
+    const ticketPrice = 100000;
+    const hasServerSeats = /*[[${seats != null and !#lists.isEmpty(seats)}]]*/ false;
+    const serverBookedSeats = /*[[${bookedSeats}]]*/ [];
+    const showtimeEndTime = /*[[${showtime != null && showtime.startTime != null ? #temporals.format((movie != null && movie.duration != null ? showtime.startTime.plusMinutes(movie.duration) : showtime.startTime), 'yyyy-MM-dd''T''HH:mm:ss') : ''}]]*/ '';
+    const bookedSeatSet = new Set((serverBookedSeats || []).map((seat) => String(seat).trim()));
+    const selectedSeatCountLabel = document.getElementById('selectedSeatCount');
+    const estimatedTotalLabel = document.getElementById('estimatedTotal');
+    const voucherCodeInput = document.getElementById('voucherCode');
 
-    let price = [[${showtime.price}]];
+    function isShowtimeExpired() {
+        if (!showtimeEndTime) return false;
+        const parsed = Date.parse(showtimeEndTime);
+        return !Number.isNaN(parsed) && parsed <= Date.now();
+    }
 
-    let bookedSeats = [[${bookedSeats}]];
+    function redirectExpiredShowtime() {
+        alert('Suat chieu nay da het gio. Vui long chon phim hoac suat chieu khac.');
+        window.location.href = '/movies';
+    }
 
+    function ensureShowtimeActive() {
+        if (!isShowtimeExpired()) return true;
+        redirectExpiredShowtime();
+        return false;
+    }
+
+    function bindSeatEvents() {
+        document.querySelectorAll('.seat').forEach((seat) => {
+            seat.addEventListener('click', () => {
+                if (!ensureShowtimeActive() || seat.classList.contains('booked')) return;
+                seat.classList.toggle('selected');
+                updateSeatSummary();
+            });
+        });
+    }
+
+    function updateSeatSummary() {
+        const selectedSeats = Array.from(document.querySelectorAll('.seat.selected'));
+        const total = selectedSeats.length * ticketPrice;
+        if (selectedSeatCountLabel) selectedSeatCountLabel.textContent = String(selectedSeats.length);
+        if (estimatedTotalLabel) estimatedTotalLabel.textContent = `${total.toLocaleString('vi-VN')} VND`;
+    }
+
+    function renderDefaultSeats() {
+        const rows = 8;
+        const cols = 12;
+
+        for (let r = 1; r <= rows; r++) {
+            const rowDiv = document.createElement('div');
+            rowDiv.classList.add('seat-row');
+
+            for (let c = 1; c <= cols; c++) {
+                const seat = document.createElement('div');
+                seat.classList.add('seat');
+                seat.dataset.seat = `${r}-${c}`;
+                seat.innerText = `${r}-${c}`;
+                if (bookedSeatSet.has(seat.dataset.seat)) {
+                    seat.classList.add('booked');
+                }
+                rowDiv.appendChild(seat);
+            }
+            seatMap.appendChild(rowDiv);
+        }
+    }
+
+    if (!hasServerSeats) renderDefaultSeats();
+    bindSeatEvents();
+    updateSeatSummary();
+
+    if (isShowtimeExpired()) redirectExpiredShowtime();
+
+    const expiryWatcher = window.setInterval(() => {
+        if (!isShowtimeExpired()) return;
+        window.clearInterval(expiryWatcher);
+        redirectExpiredShowtime();
+    }, 30000);
+
+    function confirmSelection() {
+        if (!ensureShowtimeActive()) return;
+
+        const selectedSeats = Array.from(document.querySelectorAll('.seat.selected')).map((seat) => seat.dataset.seat);
+        if (selectedSeats.length === 0) {
+            alert('Vui long chon ghe!');
+            return;
+        }
+
+        const seatParam = encodeURIComponent(selectedSeats.join(','));
+        const voucherCode = voucherCodeInput && voucherCodeInput.value ? `&voucherCode=${encodeURIComponent(voucherCodeInput.value.trim())}` : '';
+        if (showtimeId) {
+            window.location.href = '/payment/create?seats=' + seatParam + '&showtime=' + showtimeId + voucherCode;
+            return;
+        }
+        if (movieId) {
+            window.location.href = '/payment/create?seats=' + seatParam + '&movieId=' + movieId + voucherCode;
+            return;
+        }
+        alert('Khong tim thay thong tin phim hoac suat chieu de thanh toan.');
+    }
 </script>
-
-<script src="/js/seatmap.js"></script>
-
-<script>
-
-    createSeats()
-    setBookedSeats(bookedSeats)
-
-</script>
-
 </body>
 </html>

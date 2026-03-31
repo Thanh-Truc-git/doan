@@ -1,0 +1,30 @@
+﻿<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <script>
+        (function () {
+            const theme = localStorage.getItem('bhtnex_theme') === 'light' ? 'light' : 'dark';
+            document.documentElement.setAttribute('data-theme', theme);
+        })();
+    </script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Khong co quyen truy cap</title>
+    <link rel="stylesheet" href="/css/app-theme.css">
+</head>
+<body class="auth-page">
+<div class="auth-shell">
+    <div class="auth-card" data-reveal>
+        <div class="auth-brand">
+            <span class="eyebrow">Access control</span>
+            <h1 class="auth-title">Ban khong co quyen truy cap trang nay</h1>
+            <p class="auth-subtitle">Neu ban dang co gang vao khu vuc quan tri, vui long dang nhap bang tai khoan dung role. Neu khong, hay quay ve trang phim de tiep tuc trai nghiem cinema.</p>
+        </div>
+        <div class="stack-actions">
+            <a class="btn" href="/movies">Ve trang chu</a>
+            <a class="btn ghost" href="/login">Dang nhap lai</a>
+        </div>
+    </div>
+</div>
+</body>
+</html>

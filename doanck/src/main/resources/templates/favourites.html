@@ -1,0 +1,32 @@
+﻿<!doctype html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <script>
+        (function () {
+            const theme = localStorage.getItem('bhtnex_theme') === 'light' ? 'light' : 'dark';
+            document.documentElement.setAttribute('data-theme', theme);
+        })();
+    </script>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>Phim yeu thich</title>
+    <link rel="stylesheet" href="/css/sidebar.css">
+    <link rel="stylesheet" href="/css/app-theme.css">
+</head>
+<body>
+<div class="account-shell section-stack">
+    <section class="surface-panel" data-reveal style="padding:28px;">
+        <div class="page-header">
+            <div>
+                <span class="eyebrow">Saved shortlist</span>
+                <h1 class="section-title">Phim yeu thich</h1>
+                <p class="section-text">Nhung phim ban da tim va bam trai tim o trang chu se duoc luu lai tai day de dat ve sau.</p>
+            </div>
+            <a class="btn ghost" th:href="@{/movies}">Quay lai trang phim</a>
+        </div>
+        <div id="favouritesList" class="fav-grid"></div>
+    </section>
+</div>
+<script src="/js/sidebar.js"></script>
+</body>
+</html>

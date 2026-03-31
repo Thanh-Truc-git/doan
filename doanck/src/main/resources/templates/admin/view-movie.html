@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin - View Movie</title>
+    <style>
+        body{font-family:Arial,sans-serif;background:#111827;color:#fff;margin:0;padding:24px}
+        .wrap{max-width:1100px;margin:0 auto}
+        .top{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:20px}
+        .btn{display:inline-block;background:#374151;color:#fff;text-decoration:none;padding:10px 14px;border-radius:10px}
+        .btn.edit{background:#f59e0b;color:#111827}
+        .card{background:#1f2937;border:1px solid #374151;border-radius:18px;padding:20px}
+        .hero{display:grid;grid-template-columns:280px 1fr;gap:20px}
+        .poster{width:100%;height:400px;object-fit:cover;border-radius:14px;background:#0f172a;border:1px solid #374151}
+        .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px;margin-top:18px}
+        .info{background:#111827;border:1px solid #374151;border-radius:12px;padding:14px}
+        .info h4{margin:0 0 8px;color:#9ca3af;font-size:13px}
+        .info p{margin:0;font-size:16px;font-weight:700}
+        .desc{margin-top:18px;line-height:1.6;color:#e5e7eb}
+        table{width:100%;border-collapse:collapse;margin-top:18px;background:#111827;border-radius:14px;overflow:hidden}
+        th,td{padding:12px;border-bottom:1px solid #374151;text-align:left}
+        th{background:#0f172a}
+        .empty{margin-top:18px;color:#9ca3af}
+        @media (max-width:768px){
+            .hero{grid-template-columns:1fr}
+            .poster{height:320px}
+        }
+    </style>
+    <link rel="stylesheet" href="/css/app-theme.css">
+</head>
+<body>
+<a href="/admin/dashboard" style="position:fixed;top:20px;right:20px;padding:10px 14px;background:#374151;color:#fff;text-decoration:none;border-radius:10px;z-index:9999;">Dashboard</a>
+<div class="wrap">
+    <div class="top">
+        <h2>Chi tiết phim</h2>
+        <div>
+            <a class="btn edit" th:href="@{/admin/movies/edit/{id}(id=${movie.id})}">Edit</a>
+            <a class="btn" href="/admin/movies">Back</a>
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="hero">
+            <div>
+                <img class="poster"
+                     th:if="${movie.poster != null && !#strings.isEmpty(movie.poster)}"
+                     th:src="@{'/uploads/' + ${movie.poster}}"
+                     alt="Movie poster">
+                <div class="poster"
+                     th:if="${movie.poster == null || #strings.isEmpty(movie.poster)}"
+                     style="display:flex;align-items:center;justify-content:center;color:#9ca3af;">
+                    No Poster
+                </div>
+            </div>
+
+            <div>
+                <h1 style="margin:0 0 8px" th:text="${movie.title}">Movie Title</h1>
+                <div class="grid">
+                    <div class="info">
+                        <h4>ID</h4>
+                        <p th:text="${movie.id}">1</p>
+                    </div>
+                    <div class="info">
+                        <h4>Thể loại</h4>
+                        <p th:text="${movie.genre != null ? movie.genre : 'Chưa có'}">N/A</p>
+                    </div>
+                    <div class="info">
+                        <h4>Thời lượng</h4>
+                        <p th:text="${movie.duration != null ? movie.duration + ' phút' : 'Chưa có'}">N/A</p>
+                    </div>
+                    <div class="info">
+                        <h4>Trailer</h4>
+                        <p th:text="${movie.trailerUrl != null && !#strings.isEmpty(movie.trailerUrl) ? movie.trailerUrl : 'Chưa có'}">N/A</p>
+                    </div>
+                </div>
+
+                <div class="desc">
+                    <strong>Mô tả:</strong>
+                    <p th:text="${movie.description != null && !#strings.isEmpty(movie.description) ? movie.description : 'Chưa có mô tả cho phim này.'}">
+                        Chưa có mô tả.
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <div th:if="${showtimes != null && !#lists.isEmpty(showtimes)}">
+            <h3 style="margin:24px 0 12px">Danh sách suất chiếu</h3>
+            <table>
+                <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Thời gian</th>
+                    <th>Phòng</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="showtime : ${showtimes}">
+                    <td th:text="${showtime.id}">1</td>
+                    <td th:text="${showtime.startTime != null ? #temporals.format(showtime.startTime, 'dd/MM/yyyy HH:mm') : 'Chưa có'}">N/A</td>
+                    <td th:text="${showtime.room != null ? showtime.room.name : 'Chưa có phòng'}">N/A</td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div th:if="${showtimes == null || #lists.isEmpty(showtimes)}" class="empty">
+            Phim này hiện chưa có suất chiếu.
+        </div>
+    </div>
+</div>
+</body>
+</html>
