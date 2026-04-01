@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin - Promotions</title>
+    <style>
+        body{font-family:Arial,sans-serif;background:#121212;color:#fff;margin:0;padding:20px}
+        .top{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:20px;flex-wrap:wrap}
+        a.btn{background:#2563eb;color:#fff;text-decoration:none;padding:10px 14px;border-radius:8px}
+        table{width:100%;border-collapse:collapse;background:#1f1f1f;border-radius:12px;overflow:hidden}
+        th,td{padding:12px;border-bottom:1px solid #2a2a2a;text-align:left}
+        th{background:#181818}
+        .actions{display:flex;gap:8px;flex-wrap:wrap}
+        .edit{background:#f59e0b}.delete{background:#dc2626}.dark{background:#374151}
+    </style>
+    <link rel="stylesheet" href="/css/app-theme.css">
+</head>
+<body>
+<div class="top">
+    <h2>Quản lý khuyến mãi</h2>
+    <div class="actions">
+        <a class="btn dark" href="/admin/dashboard">Dashboard</a>
+        <a class="btn" href="/admin/promotions/create">+ Thêm khuyến mãi</a>
+    </div>
+</div>
+<table>
+    <thead>
+    <tr>
+        <th>ID</th>
+        <th>Mã</th>
+        <th>% Giảm</th>
+        <th>Giảm tiền</th>
+        <th>Bắt đầu</th>
+        <th>Kết thúc</th>
+        <th>Giới hạn</th>
+        <th>Đã dùng</th>
+        <th>Hoạt động</th>
+        <th>Thao tác</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr th:each="promotion : ${promotions}">
+        <td th:text="${promotion.id}">1</td>
+        <td th:text="${promotion.code}">PROMO</td>
+        <td th:text="${promotion.discountPercent}">0</td>
+        <td th:text="${promotion.discountAmount}">0</td>
+        <td th:text="${promotion.startDate != null ? #temporals.format(promotion.startDate, 'dd/MM/yyyy HH:mm') : 'N/A'}">N/A</td>
+        <td th:text="${promotion.endDate != null ? #temporals.format(promotion.endDate, 'dd/MM/yyyy HH:mm') : 'N/A'}">N/A</td>
+        <td th:text="${promotion.usageLimit}">0</td>
+        <td th:text="${promotion.usageCount}">0</td>
+        <td th:text="${promotion.active ? 'Có' : 'Không'}">Có</td>
+        <td class="actions">
+            <a class="btn edit" th:href="@{/admin/promotions/edit/{id}(id=${promotion.id})}">Sửa</a>
+            <a class="btn delete" th:href="@{/admin/promotions/delete/{id}(id=${promotion.id})}" onclick="return confirm('Xóa khuyến mãi này?')">Xóa</a>
+        </td>
+    </tr>
+    </tbody>
+</table>
+</body>
+</html>

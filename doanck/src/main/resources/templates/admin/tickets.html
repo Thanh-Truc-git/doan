@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin - Tickets</title>
+    <style>
+        body{font-family:Arial,sans-serif;background:#121212;color:#fff;margin:0;padding:20px}
+        .top{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:20px;flex-wrap:wrap}
+        .actions-top{display:flex;gap:10px;flex-wrap:wrap}
+        a.btn{background:#374151;color:#fff;text-decoration:none;padding:10px 14px;border-radius:8px}
+        a.btn.primary{background:#2563eb}
+        table{width:100%;border-collapse:collapse;background:#1f1f1f;border-radius:12px;overflow:hidden}
+        th,td{padding:12px;border-bottom:1px solid #2a2a2a;text-align:left}
+        th{background:#181818}
+        a.link-checkin{display:inline-block;background:#2563eb;color:#fff;text-decoration:none;padding:8px 12px;border-radius:8px}
+    </style>
+    <link rel="stylesheet" href="/css/app-theme.css">
+</head>
+<body>
+<div class="top">
+    <h2>Quản lý vé</h2>
+    <div class="actions-top">
+        <a class="btn primary" href="/admin/tickets/check-in">Check-in QR</a>
+        <a class="btn" href="/admin/dashboard">Dashboard</a>
+    </div>
+</div>
+<table>
+    <thead>
+    <tr>
+        <th>ID</th>
+        <th>Mã vé</th>
+        <th>Người dùng</th>
+        <th>Ghế</th>
+        <th>Trạng thái</th>
+        <th>Phim</th>
+        <th>Suất chiếu</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr th:each="ticket : ${tickets}">
+        <td th:text="${ticket.id}">1</td>
+        <td th:text="${ticket.ticketCode != null ? ticket.ticketCode : 'N/A'}">N/A</td>
+        <td th:text="${ticket.user != null ? ticket.user.username : 'N/A'}">N/A</td>
+        <td th:text="${ticket.seatNumber}">A1</td>
+        <td th:text="${ticket.status != null ? ticket.status : 'PENDING'}">PENDING</td>
+        <td th:text="${ticket.showtime != null && ticket.showtime.movie != null ? ticket.showtime.movie.title : 'Chưa có phim'}">N/A</td>
+        <td th:text="${ticket.showtime != null && ticket.showtime.startTime != null ? #temporals.format(ticket.showtime.startTime, 'dd/MM/yyyy HH:mm') : 'Chưa có suất chiếu'}">N/A</td>
+    </tr>
+    </tbody>
+</table>
+</body>
+</html>
